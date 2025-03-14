@@ -6,6 +6,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use PhpParser\Node\NullableType;
 
 class AuthController extends Controller
 {
@@ -31,7 +32,7 @@ class AuthController extends Controller
             $token = $user->createToken('auth-token')->plainTextToken;
             return compact('user', 'token');
         }
-        return ['errors' => ['email' => ['email or password are incorrect']]];
+        return response(['errors' => ['email' => ['email or password are incorrect']]], 422);
     }
     public function logout(Request $request)
     {
