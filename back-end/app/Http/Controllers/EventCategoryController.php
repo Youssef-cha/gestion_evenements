@@ -13,7 +13,7 @@ class EventCategoryController extends Controller
      */
     public function index()
     {
-        //
+        return EventCategory::all();
     }
 
     /**
@@ -21,7 +21,7 @@ class EventCategoryController extends Controller
      */
     public function store(StoreEventCategoryRequest $request)
     {
-        //
+        EventCategory::create($request->validated());
     }
 
     /**
@@ -29,7 +29,7 @@ class EventCategoryController extends Controller
      */
     public function show(EventCategory $eventCategory)
     {
-        //
+        return $eventCategory;
     }
 
     /**
@@ -37,7 +37,7 @@ class EventCategoryController extends Controller
      */
     public function update(UpdateEventCategoryRequest $request, EventCategory $eventCategory)
     {
-        //
+        $eventCategory->update($request->validated());
     }
 
     /**
@@ -45,6 +45,6 @@ class EventCategoryController extends Controller
      */
     public function destroy(EventCategory $eventCategory)
     {
-        //
+        $eventCategory
     }
 }
