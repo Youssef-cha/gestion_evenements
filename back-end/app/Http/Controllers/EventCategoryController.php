@@ -21,7 +21,8 @@ class EventCategoryController extends Controller
      */
     public function store(StoreEventCategoryRequest $request)
     {
-        EventCategory::create($request->validated());
+        $eventCategory = EventCategory::create($request->validated());
+        return $eventCategory;
     }
 
     /**
@@ -38,6 +39,7 @@ class EventCategoryController extends Controller
     public function update(UpdateEventCategoryRequest $request, EventCategory $eventCategory)
     {
         $eventCategory->update($request->validated());
+        return $eventCategory;
     }
 
     /**
@@ -45,6 +47,7 @@ class EventCategoryController extends Controller
      */
     public function destroy(EventCategory $eventCategory)
     {
-        $eventCategory
+        $eventCategory->delete();
+        return response(204);
     }
 }
