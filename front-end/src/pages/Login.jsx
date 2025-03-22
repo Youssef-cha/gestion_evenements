@@ -1,4 +1,4 @@
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,12 +30,16 @@ const Login = () => {
     defaultValues: { email: "", password: "" },
   });
   const onSubmit = async (credentials) => {
-    dispatch(login(credentials)).then();
+    dispatch(login(credentials));
   };
-  // still need somework
-  !formLoading && errors && toast.error("email or password are incorrect");
+  if (!formLoading && errors) {
+    Object.keys(errors).forEach((key) => {
+      toast.error(errors[key][0]);
+    });
+  }
+
   return (
-    <div className="border bg-neutral-50 w-2/3 sm:w-2/4 md:w-[400px] mx-auto px-6 rounded-2xl shadow-lg h-[450px]">
+    <div className="border dark:bg-neutral-800 bg-neutral-50 w-2/3 sm:w-2/4 md:w-[400px] mx-auto px-6 rounded-2xl shadow-lg h-[450px]">
       <h2 className="font-bold text-2xl text-center my-10">Login</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -81,7 +85,6 @@ const Login = () => {
           </p>
         </form>
       </Form>
-      <Toaster richColors />
     </div>
   );
 };

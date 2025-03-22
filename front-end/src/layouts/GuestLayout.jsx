@@ -1,17 +1,15 @@
-import Loading from "@/pages/Loading";
-import { getAuthLoader, getAuthUser } from "@/redux/authSlice";
+import { getAuthUser } from "@/redux/authSlice";
 import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router";
+import { Toaster } from "sonner";
 
 const GuestLayout = () => {
   const user = useSelector(getAuthUser);
-  const loading = useSelector(getAuthLoader);
-  if (loading) {
-    return <Loading />;
-  }
+  if (user) return <Navigate to={"/home"} replace />;
   return (
-    <main className="flex bg-neutral-100 justify-center items-center min-h-screen">
-      {!user ? <Outlet /> : <Navigate to={"/home"} replace />}
+    <main className="flex dark:bg-neutral-900  bg-neutral-100 justify-center items-center min-h-screen">
+      <Outlet />
+      <Toaster />
     </main>
   );
 };

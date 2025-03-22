@@ -18,6 +18,17 @@ const getUser = createAsyncThunk(
     }
   }
 );
+const logout = createAsyncThunk(
+  "auth/logout",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.post("/logout");
+      return response.status;
+    } catch (error) {
+      return rejectWithValue(error.response.data.errors);
+    }
+  }
+);
 const login = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
@@ -47,6 +58,9 @@ const authSlice = createSlice({
     setLoader: (state, action) => {
       state.loading = action.payload;
     },
+    setUserVerified: (state) => {
+      state.user.verified = true;
+    }
   },
   extraReducers: (build) => {
     build
@@ -56,7 +70,6 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.formLoading = false;
-        state.user = action.payload.user;
         localStorage.setItem("access_token", action.payload.token);
         state.token = action.payload.token;
       })
@@ -69,8 +82,6 @@ const authSlice = createSlice({
         state.formLoading = true;
       })
       .addCase(register.fulfilled, (state, action) => {
-        state.user = action.payload.user;
-        state.errors = null;
         state.formLoading = false;
         localStorage.setItem("access_token", action.payload.token);
         state.token = action.payload.token;
@@ -88,6 +99,20 @@ const authSlice = createSlice({
           state.token = null;
         }
         state.loading = false;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.formLoading = false;
+        localStorage.removeItem("access_token");
+      })
+      .addCase(logout.pending, (state) => {
+        state.errors = null;
+        state.formLoading = true;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.errors = action.payload;
+        state.formLoading = false;
       });
   },
 });
@@ -102,6 +127,7 @@ const getFormLoading = (state) => state.auth.formLoading;
 export {
   login,
   register,
+  logout,
   getUser,
   getAuthErrors,
   getAuthUser,
@@ -109,5 +135,5 @@ export {
   getAuthLoader,
   getFormLoading,
 };
-export const { setLoader } = authSlice.actions;
+export const { setLoader,setUserVerified } = authSlice.actions;
 export default authSlice.reducer;

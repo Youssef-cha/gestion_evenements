@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAuthErrors, getFormLoading, register } from "@/redux/authSlice";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 const Register = () => {
   const errors = useSelector(getAuthErrors);
   const formLoading = useSelector(getFormLoading);
@@ -51,11 +51,14 @@ const Register = () => {
   const onSubmit = async (credentials) => {
     dispatch(register(credentials));
   };
-  // still need somework 
-  !formLoading && errors && toast.error("email has already been taken");
+  if (!formLoading && errors) {
+    Object.keys(errors).forEach((key) => {
+      toast.error(errors[key][0]);
+    });
+  }
 
   return (
-    <div className="border bg-neutral-50 w-2/3 sm:w-2/4 md:w-[400px] mx-auto px-6 rounded-2xl shadow-lg h-[500px]">
+    <div className="border dark:bg-neutral-800 bg-neutral-50 w-2/3 sm:w-2/4 md:w-[400px] mx-auto px-6 rounded-2xl shadow-lg h-[500px]">
       <h2 className="font-bold text-2xl text-center my-6">Sign up</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -131,7 +134,6 @@ const Register = () => {
           </p>
         </form>
       </Form>
-      <Toaster richColors />
     </div>
   );
 };

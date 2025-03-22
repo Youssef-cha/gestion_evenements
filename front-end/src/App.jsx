@@ -2,11 +2,13 @@ import React, { useEffect } from "react";
 import router from "./router";
 import { useDispatch, useSelector } from "react-redux";
 import { RouterProvider } from "react-router";
-import { getCurrentToken, getUser, setLoader } from "./redux/authSlice";
+import { getAuthLoader, getCurrentToken, getUser, setLoader } from "./redux/authSlice";
+import Loading from "./pages/Loading";
 
 const App = () => {
   const token = useSelector(getCurrentToken);
   const dispatch = useDispatch();
+  const loading = useSelector(getAuthLoader);
   useEffect(() => {
     if (token) {
       dispatch(getUser());
@@ -14,6 +16,7 @@ const App = () => {
       dispatch(setLoader(false));
     }
   }, [token, dispatch]);
+  if (loading) return <Loading />;
   return <RouterProvider router={router} />;
 };
 

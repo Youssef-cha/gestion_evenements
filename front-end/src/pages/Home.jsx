@@ -1,9 +1,7 @@
-import { getAuthUser } from "@/redux/authSlice";
-import { useSelector } from "react-redux";
+
 
 
 const Home = () => {
-  const user = useSelector(getAuthUser)
-  return <div>welcom {user.name } </div>;
+  return <div>home page</div>;
 };
 export default Home;
