@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Event;
 use App\Models\EventCategory;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -21,9 +22,10 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        EventCategory::factory()->hasEvents(10)->create();
-        EventCategory::factory(2)->hasEvents(5)->create();
-        EventCategory::factory(4)->hasEvents(6)->create();
+
+        Event::factory(10)->create([
+            "user_id" => 1
+        ]);
 
 
     }

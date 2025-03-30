@@ -9,13 +9,26 @@ class Event extends Model
 {
     /** @use HasFactory<\Database\Factories\EventFactory> */
     use HasFactory;
-    public function category() {
-        return $this->belongsTo(EventCategory::class);
+    protected $fillable = [
+        'title',
+        'description',
+        'event_category_id',
+        'start_time',
+        'end_time',
+        'location',
+        'all_day'
+    ];
+    protected $with = ['category'];
+    public function category()
+    {
+        return $this->belongsTo(EventCategory::class, 'event_category_id');
     }
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
-    public function reminders(){
+    public function reminders()
+    {
         return $this->hasMany(Reminder::class);
     }
 }

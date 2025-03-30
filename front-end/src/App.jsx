@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import router from "./router";
 import { useDispatch, useSelector } from "react-redux";
 import { RouterProvider } from "react-router";
@@ -9,6 +9,7 @@ const App = () => {
   const token = useSelector(getCurrentToken);
   const dispatch = useDispatch();
   const loading = useSelector(getAuthLoader);
+  
   useEffect(() => {
     if (token) {
       dispatch(getUser());
@@ -17,6 +18,7 @@ const App = () => {
     }
   }, [token, dispatch]);
   if (loading) return <Loading />;
+  
   return <RouterProvider router={router} />;
 };
 

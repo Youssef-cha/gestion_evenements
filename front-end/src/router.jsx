@@ -7,6 +7,9 @@ import Home from "./pages/Home";
 import Verification from "./pages/Verification";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import ResetPassword from "./pages/ResetPassword";
+import Calendar from "./pages/Calendar";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "/verify",
         element: <Verification />,
+      },
+      {
+        path: "/calendar",
+        element: <Calendar />,
       },
       {
         path: "/profile",
@@ -38,6 +45,15 @@ const router = createBrowserRouter([
       {
         path: "register",
         element: <Register />,
+      },
+
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
+        path: "reset-password",
+        element: <ResetPassword />,
       },
     ],
   },

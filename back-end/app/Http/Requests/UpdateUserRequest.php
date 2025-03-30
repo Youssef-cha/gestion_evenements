@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreEventRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,13 +23,10 @@ class StoreEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => "required|string|max:255",
-            "description" => "required|string|max:255",
-            "event_category_id" => "required",
-            "start_time" => "required|date",
-            "end_time" => "required|date",
-            "location" => "required|string|max:255",
-            "all_day" => "required|boolean",
+            "name" => ['required', 'string', 'max:50'],
+            "email" => ['required', 'email'],
+            "old_password" => ['required_with:password'],
+            "password" => ['required_with:old_password',  'confirmed'],
         ];
     }
 }

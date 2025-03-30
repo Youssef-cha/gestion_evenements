@@ -22,7 +22,7 @@ const Verification = () => {
     error: "verification failed please try again",
   });
 
-  return <Navigate to={"/home"} replace />;
+  return <Navigate to={"/"} replace />;
 };
 
 export default Verification;

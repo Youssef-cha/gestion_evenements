@@ -37,6 +37,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Custom bl color palette */
 }
 
 .dark {
@@ -72,7 +74,17 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
-
+@theme {
+  --color-bl-100: #d9e2fb;
+  --color-bl-200: #b4c4f7;
+  --color-bl-300: #8ea7f3;
+  --color-bl-400: #6989ef;
+  --color-bl-500: #436ceb;
+  --color-bl-600: #3656bc;
+  --color-bl-700: #28418d;
+  --color-bl-800: #1b2b5e;
+  --color-bl-900: #0d162f;
+}
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -119,3 +131,71 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Calendar Styles */
+.calendar-container {
+  @apply w-full relative lg:w-3/12 h-[85vh] overflow-y-auto;
+}
+
+.calendar-container::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.calendar-container::-webkit-scrollbar-track {
+  @apply bg-neutral-800;
+}
+
+.calendar-container::-webkit-scrollbar-thumb {
+  @apply bg-neutral-700 rounded-full;
+}
+
+.calendar-container::-webkit-scrollbar-thumb:hover {
+  @apply bg-neutral-600;
+}
+
+.calendar-header {
+  @apply text-xl rounded inset-x-0 top-0 bg-white dark:bg-neutral-900 sticky lg:text-2xl py-4 lg:py-6 mb-4 font-bold px-4 lg:px-7;
+}
+
+.calendar-event-item {
+  @apply border border-gray-200 dark:border-gray-800 shadow px-3 lg:px-4 py-2 rounded-md text-teal-600 dark:text-teal-300 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer;
+}
+
+.calendar-event-category {
+  @apply text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-neutral-200;
+}
+
+.calendar-event-date {
+  @apply text-gray-800 dark:text-neutral-100 text-xs lg:text-sm block mt-1;
+}
+
+/* FullCalendar Customization */
+.calendar-wrapper .fc-toolbar-title {
+  @apply text-gray-900 dark:text-white;
+}
+
+.calendar-wrapper .fc-button {
+  @apply bg-gray-200 dark:bg-neutral-800 text-gray-900 dark:text-white;
+}
+
+.calendar-wrapper .fc-button-active {
+  @apply bg-gray-300 dark:bg-neutral-700;
+}
+
+.calendar-wrapper .fc-col-header {
+  @apply bg-gray-100 dark:bg-neutral-800;
+}
+
+.calendar-wrapper .fc-col-header-cell-cushion {
+  @apply text-gray-900 dark:text-white;
+}
+
+.calendar-wrapper .fc-daygrid-day {
+  @apply bg-white dark:bg-neutral-900;
+}
+
+.calendar-wrapper .fc-daygrid-day-number {
+  @apply text-gray-900 dark:text-white;
+}
+
+

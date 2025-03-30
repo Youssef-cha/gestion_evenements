@@ -60,7 +60,7 @@ const authSlice = createSlice({
     },
     setUserVerified: (state) => {
       state.user.verified = true;
-    }
+    },
   },
   extraReducers: (build) => {
     build
@@ -135,5 +135,5 @@ export {
   getAuthLoader,
   getFormLoading,
 };
-export const { setLoader,setUserVerified } = authSlice.actions;
+export const { setLoader, setUserVerified } = authSlice.actions;
 export default authSlice.reducer;

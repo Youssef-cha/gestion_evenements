@@ -3,8 +3,11 @@ import "./index.css";
 import App from "./App";
 import { Provider } from "react-redux";
 import store from "./redux/store";
+import ColorProvider from "./contexts/ColorProvider";
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <App />
+    <ColorProvider>
+      <App />
+    </ColorProvider>
   </Provider>
 );

@@ -8,8 +8,12 @@ import { toast, Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import axiosClient from "@/axios";
+import { Switch } from "@/components/ui/switch";
+import { Moon, Sun } from "lucide-react";
+import { useColorContext } from "@/hooks/useColorContext";
 
 const DefaultLayout = () => {
+  const { isLight, setIsLight } = useColorContext();
   const user = useSelector(getAuthUser);
   const onClickHandler = async () => {
     const promise = axiosClient.post("/email/verification-notification");
@@ -43,13 +47,27 @@ const DefaultLayout = () => {
         ),
       });
   }, [user]);
+
   if (!user) return <Navigate to={"/login"} replace />;
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <AppSidbar user={user} />
-      <main className=" w-full">
-        <SidebarTrigger className="mt-2 ml-2 " />
+      <main className="dark:bg-neutral-900  bg-white w-full">
+        <div className="w-full flex justify-between items-center py-2 px-6">
+          <SidebarTrigger />
+          <div className="flex items-center space-x-2">
+            <Moon />
+            <Switch
+              className={"dark:bg-red-500"}
+              checked={isLight}
+              onClick={() => {
+                setIsLight(!isLight);
+              }}
+            />
+            <Sun />
+          </div>
+        </div>
         <Outlet />
         <Toaster />
       </main>
