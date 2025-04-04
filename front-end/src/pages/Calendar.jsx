@@ -27,7 +27,6 @@ export default function Calendar() {
     try {
       const response = await axiosClient.get("events");
       setEvents(response.data);
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -69,7 +68,12 @@ export default function Calendar() {
         `Are you sure you want to delete the event '${selected.event.title}'`
       )
     ) {
-      selected.event.remove();
+      try {
+        axiosClient.delete(`events/${selected.event.id}`);
+        setEvents(events.filter((event) => event.id != selected.event.id));
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -138,6 +142,7 @@ export default function Calendar() {
                 initialView="dayGridMonth"
                 selectable={true}
                 select={handleDateClick}
+                eventClick={handleEventClick}
               />
             </motion.div>
           )}

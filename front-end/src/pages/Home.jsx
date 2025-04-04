@@ -57,13 +57,13 @@ const Home = () => {
       eventDate.setHours(0, 0, 0, 0);
       return eventDate > today;
     })
-    .slice(0, 5); // Show only next 5 events
+    .slice(0, 5);
 
   // Calculate statistics
   const stats = {
     totalEvents: events.length,
     todayEvents: todayEvents.length,
-    upcomingEvents: events.filter((event) => new Date(event.start_time) > today)
+    upcomingEvents: upcomingEvents
       .length,
     totalCategories: new Set(events.map((event) => event.category?.name)).size,
   };

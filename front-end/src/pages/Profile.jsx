@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Mail, Edit, Cat } from "lucide-react";
-import { motion } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,48 +10,49 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import EditProfileModal from "@/components/EditProfileModal";
-import { useOutletContext } from "react-router";
 import { useSelector } from "react-redux";
 import { getAuthUser } from "@/redux/authSlice";
-
-// Mock data for events
-const initialEvents = [
-  {
-    id: 1,
-    title: "Have Dinner With My Family",
-    hasReminder: false,
-    date: "20/05/2025",
-    allDays: true,
-    category: "Work",
-  },
-  {
-    id: 2,
-    title: "Have Dinner With My Family",
-    hasReminder: false,
-    date: "20/05/2025",
-    allDays: true,
-    category: "Family",
-  },
-  {
-    id: 3,
-    title: "Have Dinner With My Family",
-    hasReminder: false,
-    date: "20/05/2025",
-    allDays: true,
-    category: "Family",
-  },
-];
+import axiosClient from "@/axios";
+import { formatDate } from "@fullcalendar/core";
 
 const ProfilePage = () => {
   const user = useSelector(getAuthUser);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [events, setEvents] = useState(initialEvents);
+  const [allEvents, setAllEvents] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const filteredEvents =
-    selectedCategory === "All"
-      ? events
-      : events.filter((event) => event.category === selectedCategory);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [eventsResponse, categoriesResponse] = await Promise.all([
+          axiosClient.get("events"),
+          axiosClient.get("eventCategories")
+        ]);
+        
+        setAllEvents(eventsResponse.data);
+        
+        // Filter categories to only include those that have events
+        const categoriesWithEvents = categoriesResponse.data.filter(category => 
+          eventsResponse.data.some(event => event.category?.id === category.id)
+        );
+        setCategories(categoriesWithEvents);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const filteredEvents = selectedCategory === "All"
+    ? allEvents
+    : allEvents.filter((event) => event.category?.name === selectedCategory);
+
+  // Sort filtered events by creation date and take only the last 3
+  const lastThreeEvents = filteredEvents
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 3);
 
   const handleEditProfile = () => {
     setIsEditModalOpen(true);
@@ -117,31 +117,22 @@ const ProfilePage = () => {
             >
               All
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="hover:bg-accent/10 cursor-pointer font-medium text-popover-foreground"
-              onClick={() => setSelectedCategory("Family")}
-            >
-              Family
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="hover:bg-accent/10 cursor-pointer font-medium text-popover-foreground"
-              onClick={() => setSelectedCategory("Work")}
-            >
-              Work
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="hover:bg-accent/10 cursor-pointer font-medium text-popover-foreground"
-              onClick={() => setSelectedCategory("Personal")}
-            >
-              Personal
-            </DropdownMenuItem>
+            {categories.map((category) => (
+              <DropdownMenuItem
+                key={category.id}
+                className="hover:bg-accent/10 cursor-pointer font-medium text-popover-foreground"
+                onClick={() => setSelectedCategory(category.name)}
+              >
+                {category.name}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
       {/* Event Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {filteredEvents.map((event) => (
+        {lastThreeEvents.map((event) => (
           <Card
             key={event.id}
             className="bg-card border-border hover:bg-accent/10 transition duration-200 shadow-md"
@@ -152,21 +143,21 @@ const ProfilePage = () => {
               </h3>
               <div className="space-y-2 text-sm">
                 <p className="text-muted-foreground">
-                  has a reminder:{" "}
+                  Category:{" "}
                   <span className="text-card-foreground font-medium">
-                    {event.hasReminder ? "yes" : "no"}
+                    {event.category?.name || "Uncategorized"}
                   </span>
                 </p>
                 <p className="text-muted-foreground">
-                  date:{" "}
+                  Start:{" "}
                   <span className="text-card-foreground font-medium">
-                    {event.date}
+                    {formatDate(event.start_time)}
                   </span>
                 </p>
                 <p className="text-muted-foreground">
-                  all days:{" "}
+                  End:{" "}
                   <span className="text-card-foreground font-medium">
-                    {event.allDays ? "yes" : "no"}
+                    {formatDate(event.end_time)}
                   </span>
                 </p>
               </div>
@@ -174,8 +165,6 @@ const ProfilePage = () => {
           </Card>
         ))}
       </div>
-
-      {/* Edit Profile Modal */}
 
       <EditProfileModal
         isOpen={isEditModalOpen}
