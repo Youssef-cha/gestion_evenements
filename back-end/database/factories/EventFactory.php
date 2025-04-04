@@ -26,7 +26,6 @@ class EventFactory extends Factory
             "end_time" => $this->faker->dateTimeBetween('-1 week', '+1 week'),
             "location" => $this->faker->word(),
             "event_category_id" => EventCategory::factory(),
-            "all_day" => $this->faker->numberBetween(0, 1),
         ];
     }
 }

@@ -198,4 +198,6 @@
   @apply text-gray-900 dark:text-white;
 }
 
-
+.fc .fc-daygrid-day.fc-day-today {
+  @apply bg-slate-200 dark:bg-slate-800;
+}

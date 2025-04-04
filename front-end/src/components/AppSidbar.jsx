@@ -30,6 +30,7 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import {
   Calendar,
+  ChartLine,
   ChevronUp,
   HomeIcon,
   LogOut,
@@ -52,6 +53,11 @@ const AppSidbar = ({ user }) => {
       title: "calendar",
       icon: <Calendar className="text-muted-foreground" />,
       link: "/calendar",
+    },
+    {
+      title: "Analytics",
+      icon: <ChartLine className="text-muted-foreground" />,
+      link: "/analytics",
     },
   ];
   const dispatch = useDispatch();

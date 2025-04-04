@@ -22,7 +22,6 @@ return new class extends Migration
             $table->dateTime('end_time');
             $table->string('location');
             $table->foreignIdFor(EventCategory::class)->constrained();
-            $table->boolean('all_day');
             $table->timestamps();
         });
     }

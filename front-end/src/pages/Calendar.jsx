@@ -1,8 +1,9 @@
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
+import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { formatDate } from "@fullcalendar/core";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,7 +11,7 @@ import CalendarSkeleton from "@/components/CalendarSkeleton";
 import { motion } from "framer-motion";
 import axiosClient from "@/axios";
 import AddEventModal from "@/components/AddEventModal";
-
+import listPlugin from "@fullcalendar/list";
 export default function Calendar() {
   const { open } = useSidebar();
 
@@ -129,7 +130,7 @@ export default function Calendar() {
                 headerToolbar={{
                   left: "prev,next today",
                   center: "title",
-                  right: "dayGridYear,dayGridMonth,dayGridWeek",
+                  right: "dayGridMonth,timeGridWeek,listMonth",
                 }}
                 events={events.map((event) => ({
                   id: event.id,
@@ -138,7 +139,12 @@ export default function Calendar() {
                   end: event.end_time,
                 }))}
                 handleWindowResize
-                plugins={[dayGridPlugin, interactionPlugin]}
+                plugins={[
+                  dayGridPlugin,
+                  interactionPlugin,
+                  timeGridPlugin,
+                  listPlugin,
+                ]}
                 initialView="dayGridMonth"
                 selectable={true}
                 select={handleDateClick}

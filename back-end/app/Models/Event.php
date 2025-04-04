@@ -16,7 +16,6 @@ class Event extends Model
         'start_time',
         'end_time',
         'location',
-        'all_day'
     ];
     protected $with = ['category'];
     public function category()
@@ -26,9 +25,5 @@ class Event extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-    public function reminders()
-    {
-        return $this->hasMany(Reminder::class);
     }
 }

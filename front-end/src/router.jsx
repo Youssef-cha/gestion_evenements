@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import ResetPassword from "./pages/ResetPassword";
 import Calendar from "./pages/Calendar";
 import ForgotPassword from "./pages/ForgotPassword";
+import Analytics from "./pages/Analytics";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "/calendar",
         element: <Calendar />,
+      },
+      {
+        path: "/analytics",
+        element: <Analytics />,
       },
       {
         path: "/profile",

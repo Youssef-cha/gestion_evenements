@@ -28,7 +28,6 @@ class StoreEventRequest extends FormRequest
             "start_time" => "required|date",
             "end_time" => "required|date",
             "location" => "required|string|max:255",
-            "all_day" => "required|boolean",
         ];
     }
 }

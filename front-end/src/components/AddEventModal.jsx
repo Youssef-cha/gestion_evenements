@@ -26,14 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   event_category_id: z.string().min(1, "Category is required"),
   location: z.string().min(1, "Location is required"),
-  all_day: z.boolean().default(false),
 });
 
 const AddEventModal = ({
@@ -49,7 +47,6 @@ const AddEventModal = ({
       description: "",
       event_category_id: "",
       location: "",
-      all_day: false,
     },
   });
 
@@ -135,23 +132,6 @@ const AddEventModal = ({
                   <FormControl>
                     <Input placeholder="Event location" {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="all_day"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel>All Day Event</FormLabel>
                   <FormMessage />
                 </FormItem>
               )}
