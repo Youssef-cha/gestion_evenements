@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,10 +16,9 @@ import loginImage from "../assets/3d-rendering-abstract-black-white-background.j
 import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAuthErrors, getFormLoading, login } from "@/redux/authSlice";
+import {  getFormLoading, login } from "@/redux/authSlice";
 
 const Login = () => {
-  const errors = useSelector(getAuthErrors);
   const formLoading = useSelector(getFormLoading);
   const dispatch = useDispatch();
   const loginSchema = z.object({
@@ -34,11 +32,7 @@ const Login = () => {
   const onSubmit = async (credentials) => {
     dispatch(login(credentials));
   };
-  if (!formLoading && errors) {
-    Object.keys(errors).forEach((key) => {
-      toast.error(errors[key][0]);
-    });
-  }
+  
 
   return (
     <motion.div

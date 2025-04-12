@@ -4,10 +4,12 @@ import App from "./App";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import ColorProvider from "./contexts/ColorProvider";
+import { Toaster } from "sonner";
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <ColorProvider>
       <App />
+      <Toaster />
     </ColorProvider>
   </Provider>
 );

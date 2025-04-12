@@ -18,13 +18,15 @@ class EventFactory extends Factory
      */
     public function definition(): array
     {
+        $start_time = $this->faker->dateTimeThisDecade();
+        $end_time = $this->faker->dateTimeBetween($start_time, '+1 month');
         return [
             "user_id" => User::factory(),
-            "title" => $this->faker->word(),
-            "description" => $this->faker->sentence(),
-            "start_time" => $this->faker->dateTimeBetween('-1 week', '+1 week'),
-            "end_time" => $this->faker->dateTimeBetween('-1 week', '+1 week'),
-            "location" => $this->faker->word(),
+            "title" => $this->faker->sentence(3),
+            "description" => $this->faker->paragraph(),
+            "start_time" => $start_time,
+            "end_time" => $end_time,
+            "location" => $this->faker->address(),
             "event_category_id" => EventCategory::factory(),
         ];
     }

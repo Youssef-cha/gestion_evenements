@@ -20,6 +20,7 @@ import {
 import { useEffect, useState } from "react";
 import axiosClient from "@/axios";
 import { formatDate } from "@fullcalendar/core";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router";
 
 const Home = () => {
@@ -63,8 +64,7 @@ const Home = () => {
   const stats = {
     totalEvents: events.length,
     todayEvents: todayEvents.length,
-    upcomingEvents: upcomingEvents
-      .length,
+    upcomingEvents: upcomingEvents.length,
     totalCategories: new Set(events.map((event) => event.category?.name)).size,
   };
 
@@ -94,7 +94,9 @@ const Home = () => {
             <Calendar className="h-4 w-4 text-neutral-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalEvents}</div>
+            <div className="text-2xl font-bold">
+              {loading ? <Skeleton className="h-8 w-16" /> : stats.totalEvents}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -105,7 +107,9 @@ const Home = () => {
             <CalendarCheck className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.todayEvents}</div>
+            <div className="text-2xl font-bold">
+              {loading ? <Skeleton className="h-8 w-16" /> : stats.todayEvents}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -116,7 +120,13 @@ const Home = () => {
             <Bell className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.upcomingEvents}</div>
+            <div className="text-2xl font-bold">
+              {loading ? (
+                <Skeleton className="h-8 w-16" />
+              ) : (
+                stats.upcomingEvents
+              )}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -127,7 +137,13 @@ const Home = () => {
             <Tag className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalCategories}</div>
+            <div className="text-2xl font-bold">
+              {loading ? (
+                <Skeleton className="h-8 w-16" />
+              ) : (
+                stats.totalCategories
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -144,7 +160,24 @@ const Home = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {todayEvents.length === 0 ? (
+              {loading ? (
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
+                      <div className="space-y-2 w-full">
+                        <Skeleton className="h-5 w-3/4" />
+                        <div className="flex items-center gap-4">
+                          <Skeleton className="h-4 w-16" />
+                          <Skeleton className="h-4 w-20" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : todayEvents.length === 0 ? (
                 <p className="text-center text-neutral-500">
                   No events scheduled for today
                 </p>
@@ -187,7 +220,25 @@ const Home = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {upcomingEvents.length === 0 ? (
+              {loading ? (
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
+                      <div className="space-y-2 w-full">
+                        <Skeleton className="h-5 w-3/4" />
+                        <div className="flex items-center gap-4">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-4 w-16" />
+                          <Skeleton className="h-4 w-20" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : upcomingEvents.length === 0 ? (
                 <p className="text-center text-neutral-500">
                   No upcoming events
                 </p>

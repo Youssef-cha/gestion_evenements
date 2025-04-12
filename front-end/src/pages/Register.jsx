@@ -14,13 +14,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAuthErrors, getFormLoading, register } from "@/redux/authSlice";
-import { toast } from "sonner";
+import { getFormLoading, register } from "@/redux/authSlice";
 import { motion } from "framer-motion";
 import loginImage from "../assets/3d-rendering-abstract-black-white-background.jpg";
 
 const Register = () => {
-  const errors = useSelector(getAuthErrors);
   const formLoading = useSelector(getFormLoading);
   const dispatch = useDispatch();
   const registerSchema = z
@@ -54,11 +52,6 @@ const Register = () => {
   const onSubmit = async (credentials) => {
     dispatch(register(credentials));
   };
-  if (!formLoading && errors) {
-    Object.keys(errors).forEach((key) => {
-      toast.error(errors[key][0]);
-    });
-  }
 
   return (
     <motion.div

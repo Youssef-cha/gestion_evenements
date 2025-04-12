@@ -40,7 +40,9 @@ import {
 import { useDispatch } from "react-redux";
 import { Link } from "react-router";
 import { Badge } from "./ui/badge";
-import { Switch } from "./ui/switch";
+import { Button } from "./ui/button";
+import axiosClient from "@/axios";
+import { toast } from "sonner";
 
 const AppSidbar = ({ user }) => {
   const sideBarItems = [
@@ -61,6 +63,14 @@ const AppSidbar = ({ user }) => {
     },
   ];
   const dispatch = useDispatch();
+  const onClickHandler = async () => {
+    const promise = axiosClient.post("/email/verification-notification");
+    toast.promise(promise, {
+      loading: "loading...",
+      success: "email sent successfully",
+      error: "error while sending email please try again",
+    });
+  };
   return (
     <Sidebar className="bg-card border-border ">
       <SidebarContent>
@@ -96,7 +106,7 @@ const AppSidbar = ({ user }) => {
                   <div className="flex items-center justify-between text-card-foreground hover:bg-accent/10">
                     <div className="flex items-center space-x-2">
                       <User2 size={20} className="text-muted-foreground" />
-                      <span>{user.name}</span>
+                      <span>{user.name.split(" ")[0]}</span>
                       {!user.verified && (
                         <Badge variant="warning">Not verified</Badge>
                       )}
@@ -154,6 +164,14 @@ const AppSidbar = ({ user }) => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            {!user.verified && (
+              <button
+                onClick={onClickHandler}
+                className="block w-full bg-amber-200 mt-2 px-2 text-yellow-900 rounded-md py-1 text-sm font-semibold underline cursor-pointer "
+              >
+                Verify Your accout
+              </button>
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

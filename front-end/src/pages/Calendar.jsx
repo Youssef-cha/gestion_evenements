@@ -8,15 +8,16 @@ import { formatDate } from "@fullcalendar/core";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import CalendarSkeleton from "@/components/CalendarSkeleton";
-import { motion } from "framer-motion";
 import axiosClient from "@/axios";
 import AddEventModal from "@/components/AddEventModal";
+import {motion} from "framer-motion";
 import listPlugin from "@fullcalendar/list";
 export default function Calendar() {
   const { open } = useSidebar();
 
   const [events, setEvents] = useState([]);
-  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(true); // For the main calendar skeleton
+  const [isEventsLoading, setIsEventsLoading] = useState(true); // For the event list skeleton
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -25,11 +26,14 @@ export default function Calendar() {
     setTimeout(() => setShowSkeleton(false), 200);
   }, [open]);
   const fetchEvents = async () => {
+    setIsEventsLoading(true); // Start loading for event list
     try {
       const response = await axiosClient.get("events");
       setEvents(response.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsEventsLoading(false); // Finish loading for event list
     }
   };
   const fetchCategories = async () => {
@@ -84,17 +88,30 @@ export default function Calendar() {
         <div className="calendar-container">
           <h3 className="calendar-header">Calendar Events</h3>
           <ul className="space-y-4 px-4 lg:px-7">
-            {events.length === 0 ? (
+            {isEventsLoading ? (
+              // Skeleton Loader for Event List
+              Array.from({ length: 4 }).map((_, index) => (
+                <li key={index} className="calendar-event-item opacity-50">
+                  <Skeleton className="h-5 w-3/4 mb-2" />
+                  <div className="flex items-center gap-2 mt-1">
+                    <Skeleton className="h-4 w-1/4" />
+                  </div>
+                  <Skeleton className="h-4 w-1/2 mt-1" />
+                </li>
+              ))
+            ) : events.length === 0 ? (
+              // No Events Message
               <div className="italic text-center text-gray-500 text-base lg:text-lg font-bold">
                 No Events Present
               </div>
             ) : (
+              // Actual Event List
               events.map((event) => (
                 <li className="calendar-event-item" key={event.id}>
                   <span>{event.title}</span>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="calendar-event-category">
-                      {event.category?.name}
+                      {event.category?.name || "Uncategorized"}
                     </span>
                   </div>
                   <label className="calendar-event-date">

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventCategoryController;
@@ -11,4 +12,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/users', [UserController::class, 'update']);
     Route::apiResource('eventCategories', EventCategoryController::class);
     Route::apiResource('events', EventController::class);
+    Route::get('/analytics', [AnalyticsController::class, 'index']);
 });

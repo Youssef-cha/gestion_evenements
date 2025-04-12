@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/Card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
-import { Button } from "@/components/ui/Button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Mail, Edit, Cat } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,9 +22,11 @@ const ProfilePage = () => {
   const [allEvents, setAllEvents] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true); // Set loading to true before fetching
       try {
         const [eventsResponse, categoriesResponse] = await Promise.all([
           axiosClient.get("events"),
@@ -32,13 +35,14 @@ const ProfilePage = () => {
         
         setAllEvents(eventsResponse.data);
         
-        // Filter categories to only include those that have events
         const categoriesWithEvents = categoriesResponse.data.filter(category => 
           eventsResponse.data.some(event => event.category?.id === category.id)
         );
         setCategories(categoriesWithEvents);
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false); // Set loading to false after fetching (success or error)
       }
     };
 
@@ -129,42 +133,58 @@ const ProfilePage = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      {/* Event Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {lastThreeEvents.map((event) => (
-          <Card
-            key={event.id}
-            className="bg-card border-border hover:bg-accent/10 transition duration-200 shadow-md"
-          >
-            <CardContent className="p-5 sm:p-6">
-              <h3 className="text-lg font-medium mb-3 text-card-foreground">
-                {event.title}
-              </h3>
-              <div className="space-y-2 text-sm">
-                <p className="text-muted-foreground">
-                  Category:{" "}
-                  <span className="text-card-foreground font-medium">
-                    {event.category?.name || "Uncategorized"}
-                  </span>
-                </p>
-                <p className="text-muted-foreground">
-                  Start:{" "}
-                  <span className="text-card-foreground font-medium">
-                    {formatDate(event.start_time)}
-                  </span>
-                </p>
-                <p className="text-muted-foreground">
-                  End:{" "}
-                  <span className="text-card-foreground font-medium">
-                    {formatDate(event.end_time)}
-                  </span>
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            {/* Event Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {isLoading ? (
+                // Skeleton Loader
+                Array.from({ length: 3 }).map((_, index) => (
+                  <Card key={index} className="bg-card border-border shadow-md">
+                    <CardContent className="p-5 sm:p-6">
+                      <Skeleton className="h-6 w-3/4 mb-3" />
+                      <div className="space-y-2 text-sm">
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                // Actual Event Cards
+                lastThreeEvents.map((event) => (
+                  <Card
+                    key={event.id}
+                    className="bg-card border-border hover:bg-accent/10 transition duration-200 shadow-md"
+                  >
+                    <CardContent className="p-5 sm:p-6">
+                      <h3 className="text-lg font-medium mb-3 text-card-foreground">
+                        {event.title}
+                      </h3>
+                      <div className="space-y-2 text-sm">
+                        <p className="text-muted-foreground">
+                          Category:{" "}
+                          <span className="text-card-foreground font-medium">
+                            {event.category?.name || "Uncategorized"}
+                          </span>
+                        </p>
+                        <p className="text-muted-foreground">
+                          Start:{" "}
+                          <span className="text-card-foreground font-medium">
+                            {formatDate(event.start_time)}
+                          </span>
+                        </p>
+                        <p className="text-muted-foreground">
+                          End:{" "}
+                          <span className="text-card-foreground font-medium">
+                            {formatDate(event.end_time)}
+                          </span>
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
 
       <EditProfileModal
         isOpen={isEditModalOpen}
