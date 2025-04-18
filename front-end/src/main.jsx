@@ -8,8 +8,8 @@ import { Toaster } from "sonner";
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <ColorProvider>
-      <App />
-      <Toaster />
+        <App />
+        <Toaster />
     </ColorProvider>
   </Provider>
 );

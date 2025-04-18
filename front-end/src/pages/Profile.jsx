@@ -83,7 +83,7 @@ const ProfilePage = () => {
                 {user.name}
               </h1>
               <button
-                className="bg-bl-500 cursor-pointer hover:bg-bl-700 rounded-sm p-2 focus:ring-bl-500 focus:ring-offset-2"
+                className="bg-primary cursor-pointer hover:bg-bl-700 rounded-sm p-2 focus:ring-primary focus:ring-offset-2"
                 onClick={handleEditProfile}
                 aria-label="Edit profile"
               >

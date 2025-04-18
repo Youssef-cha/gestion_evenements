@@ -3,47 +3,34 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* full calendar style */
-
-  /* Neutral Light Theme for FullCalendar - Higher Contrast */
   --fc-list-event-hover-bg-color: rgb(240, 240, 240);
   --fc-small-font-size: 0.85em;
-  --fc-page-bg-color: #ffffff; /* White */
-  --fc-neutral-bg-color: #fafafa; /* Very light grey */
-  --fc-neutral-text-color: #424242; /* Darker grey */
-  --fc-border-color: #eeeeee; /* Lighter grey */
-  --fc-button-text-color: #000000; /* Black */
-  --fc-button-bg-color: #f5f5f5; /* Light grey */
-  --fc-button-border-color: #e0e0e0; /* Lighter grey */
-  --fc-button-hover-bg-color: #e0e0e0; /* Lighter grey */
-  --fc-button-hover-border-color: #bdbdbd; /* Medium light grey */
-  --fc-button-active-bg-color: #bdbdbd; /* Medium light grey */
-  --fc-button-active-border-color: #757575; /* Medium grey */
-  --fc-event-bg-color: #f5f5f5; /* Light grey */
-  --fc-event-border-color: #e0e0e0; /* Lighter grey */
-  --fc-event-text-color: #212121; /* Dark grey */
-  --fc-event-selected-overlay-color: rgba(
-    0,
-    0,
-    0,
-    0.15
-  ); /* Slightly darker overlay */
-  --fc-more-link-bg-color: #f5f5f5; /* Light grey */
-  --fc-more-link-text-color: #424242; /* Darker grey */
+  --fc-page-bg-color: #ffffff;
+  --fc-neutral-bg-color: #fafafa;
+  --fc-neutral-text-color: #424242;
+  --fc-border-color: #eeeeee;
+  --fc-button-text-color: #000000;
+  --fc-button-bg-color: #f5f5f5;
+  --fc-button-border-color: #e0e0e0;
+  --fc-button-hover-bg-color: #e0e0e0;
+  --fc-button-hover-border-color: #bdbdbd;
+  --fc-button-active-bg-color: #bdbdbd;
+  --fc-button-active-border-color: #757575;
+  --fc-event-bg-color: #f5f5f5;
+  --fc-event-border-color: #e0e0e0;
+  --fc-event-text-color: #212121;
+  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.15);
+  --fc-more-link-bg-color: #f5f5f5;
+  --fc-more-link-text-color: #424242;
   --fc-event-resizer-thickness: 8px;
   --fc-event-resizer-dot-total-width: 8px;
   --fc-event-resizer-dot-border-width: 1px;
-  --fc-non-business-color: rgba(
-    230,
-    230,
-    230,
-    0.3
-  ); /* Lighter grey transparent */
-  --fc-bg-event-color: #f5f5f5; /* Light grey */
+  --fc-non-business-color: rgba(230, 230, 230, 0.3);
+  --fc-bg-event-color: #f5f5f5;
   --fc-bg-event-opacity: 0.3;
-  --fc-highlight-color: rgba(238, 238, 238, 0.3); /* Lighter grey transparent */
-  --fc-today-bg-color: rgba(224, 224, 224, 0.25); /* Lighter grey transparent */
-  --fc-now-indicator-color: #616161; /* Darker grey */
+  --fc-highlight-color: rgba(238, 238, 238, 0.3);
+  --fc-today-bg-color: rgba(224, 224, 224, 0.25);
+  --fc-now-indicator-color: #616161;
 
   --radius: 0.75rem;
   --background: oklch(1 0 0);
@@ -80,56 +67,43 @@
 }
 
 .dark {
-  /* full calendar style */
-
-  /* Neutral Dark Theme for FullCalendar - Higher Contrast */
   --fc-list-event-hover-bg-color: rgb(26, 26, 26);
   --fc-small-font-size: 0.85em;
-  --fc-page-bg-color: #121212; /* Near black */
-  --fc-neutral-bg-color: #1e1e1e; /* Very dark grey */
-  --fc-neutral-text-color: #e0e0e0; /* Lighter grey */
-  --fc-border-color: #333333; /* Dark grey */
-  --fc-button-text-color: #ffffff; /* White */
-  --fc-button-bg-color: #2c2c2c; /* Dark grey */
-  --fc-button-border-color: #424242; /* Medium dark grey */
-  --fc-button-hover-bg-color: #424242; /* Medium dark grey */
-  --fc-button-hover-border-color: #616161; /* Medium grey */
-  --fc-button-active-bg-color: #616161; /* Medium grey */
-  --fc-button-active-border-color: #757575; /* Medium light grey */
-  --fc-event-bg-color: #2c2c2c; /* Dark grey */
-  --fc-event-border-color: #424242; /* Medium dark grey */
-  --fc-event-text-color: #f5f5f5; /* Very light grey */
-  --fc-event-selected-overlay-color: rgba(
-    255,
-    255,
-    255,
-    0.15
-  ); /* Slightly lighter overlay */
-  --fc-more-link-bg-color: #2c2c2c; /* Dark grey */
-  --fc-more-link-text-color: #e0e0e0; /* Lighter grey */
+  --fc-page-bg-color: #121212;
+  --fc-neutral-bg-color: #1e1e1e;
+  --fc-neutral-text-color: #e0e0e0;
+  --fc-border-color: #333333;
+  --fc-button-text-color: #ffffff;
+  --fc-button-bg-color: #2c2c2c;
+  --fc-button-border-color: #424242;
+  --fc-button-hover-bg-color: #424242;
+  --fc-button-hover-border-color: #616161;
+  --fc-button-active-bg-color: #616161;
+  --fc-button-active-border-color: #757575;
+  --fc-event-bg-color: #2c2c2c;
+  --fc-event-border-color: #424242;
+  --fc-event-text-color: #f5f5f5;
+  --fc-event-selected-overlay-color: rgba(255, 255, 255, 0.15);
+  --fc-more-link-bg-color: #2c2c2c;
+  --fc-more-link-text-color: #e0e0e0;
   --fc-event-resizer-thickness: 8px;
   --fc-event-resizer-dot-total-width: 8px;
   --fc-event-resizer-dot-border-width: 1px;
-  --fc-non-business-color: rgba(44, 44, 44, 0.3); /* Dark grey transparent */
-  --fc-bg-event-color: #2c2c2c; /* Dark grey */
+  --fc-non-business-color: rgba(44, 44, 44, 0.3);
+  --fc-bg-event-color: #2c2c2c;
   --fc-bg-event-opacity: 0.3;
-  --fc-highlight-color: rgba(
-    66,
-    66,
-    66,
-    0.3
-  ); /* Medium dark grey transparent */
-  --fc-today-bg-color: rgba(97, 97, 97, 0.2); /* Medium grey transparent */
-  --fc-now-indicator-color: #bdbdbd; /* Lighter grey */
+  --fc-highlight-color: rgba(66, 66, 66, 0.3);
+  --fc-today-bg-color: rgba(97, 97, 97, 0.2);
+  --fc-now-indicator-color: #bdbdbd;
 
-  --background: oklch(0.141 0.005 285.823);
+  --background: oklch(0.20 0.00 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.546 0.245 262.881);
-  --primary-foreground: oklch(0.141 0.005 285.823);
+  --primary-foreground: white;
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.274 0.006 286.033);
@@ -153,18 +127,6 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.488 0.243 264.376);
-}
-
-@theme {
-  --color-bl-100: #d9e2fb;
-  --color-bl-200: #b4c4f7;
-  --color-bl-300: #8ea7f3;
-  --color-bl-400: #6989ef;
-  --color-bl-500: #436ceb;
-  --color-bl-600: #3656bc;
-  --color-bl-700: #28418d;
-  --color-bl-800: #1b2b5e;
-  --color-bl-900: #0d162f;
 }
 
 @theme inline {
@@ -205,6 +167,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -214,9 +177,8 @@
   }
 }
 
-/* Calendar Styles */
 .calendar-container {
-  @apply w-full relative lg:w-3/12 h-[85vh] overflow-y-auto;
+  @apply w-full relative lg:w-3/12  overflow-y-auto max-h-[85vh] ;
 }
 
 .calendar-container::-webkit-scrollbar {
@@ -224,22 +186,29 @@
 }
 
 .calendar-container::-webkit-scrollbar-track {
-  @apply  bg-neutral-200 rounded-full overflow-hidden;
+  @apply bg-neutral-200 rounded-full overflow-hidden;
+}
+.dark .calendar-container::-webkit-scrollbar-track {
+  @apply bg-neutral-800;
 }
 
 .calendar-container::-webkit-scrollbar-thumb {
-  @apply bg-neutral-700  rounded-full;
+  @apply bg-neutral-800  rounded-full;
+}
+.dark .calendar-container::-webkit-scrollbar-thumb {
+  @apply bg-neutral-200 ;
 }
 
 .calendar-container::-webkit-scrollbar-thumb:hover {
   @apply bg-neutral-400 dark:bg-neutral-600;
 }
+
 .calendar-header {
-  @apply text-xl rounded inset-x-0 top-0 bg-white dark:bg-neutral-900 sticky lg:text-2xl py-4 lg:py-6 mb-4 font-bold px-4 lg:px-7;
+  @apply rounded inset-x-0 top-0 bg-background sticky  py-4 lg:py-6 mb-4  px-4 lg:px-7;
 }
 
 .calendar-event-item {
-  @apply border border-gray-200 dark:border-gray-800 shadow px-3 lg:px-4 py-2 rounded-md text-teal-600 dark:text-teal-300 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer;
+  @apply border border-gray-200 dark:border-gray-800 shadow px-3 lg:px-4 py-2 rounded-md bg-card text-primary hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer;
 }
 
 .calendar-event-category {

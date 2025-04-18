@@ -21,6 +21,15 @@ class UpdateEventRequest extends FormRequest
      */
     public function rules(): array
     {
+        if ($this->method() == 'PATCH') {
+            return [
+                "title" => "sometimes|required|string|max:255",
+                "description" => "sometimes|required|string|max:255",
+                "start_time" => "sometimes|required|date",
+                "end_time" => "sometimes|required|date",
+                "location" => "sometimes|required|string|max:255",
+            ];
+        }
         return [
             "title" => "required|string|max:255",
             "description" => "required|string|max:255",

@@ -14,7 +14,7 @@ class EventController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $events = $user->events()->get();
+        $events = $user->events()->orderBy('created_at', "desc")->get();
         return response($events, 200);
     }
 

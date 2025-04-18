@@ -18,7 +18,7 @@ const DefaultLayout = () => {
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidbar user={user} />
-      <main className="dark:bg-neutral-900  bg-white w-full">
+      <main className="dark:bg-background  bg-white w-full">
         <div className="w-full flex justify-between items-center py-2 px-6">
           <SidebarTrigger />
           <div className="flex items-center space-x-2">

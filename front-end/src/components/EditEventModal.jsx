@@ -35,25 +35,38 @@ const formSchema = z.object({
   location: z.string().min(1, "Location is required"),
 });
 
-const AddEventModal = ({
+const EditEventModal = ({
   isDialogOpen,
   setIsDialogOpen,
-  handleAddEvent,
+  handleUpdateEvent,
   categories,
+  initialData,
 }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      event_category_id: "",
-      location: "",
+      title: initialData?.title || "",
+      description: initialData?.description || "",
+      event_category_id: initialData?.event_category_id?.toString() || "",
+      location: initialData?.location || "",
     },
   });
 
+  // Update form when initialData changes
+  React.useEffect(() => {
+    if (initialData) {
+      form.reset({
+        title: initialData.title,
+        description: initialData.description,
+        event_category_id: initialData.event_category_id.toString(),
+        location: initialData.location,
+      });
+    }
+  }, [initialData, form]);
+
   const onSubmit = (data) => {
     setIsDialogOpen(false);
-    handleAddEvent(data);
+    handleUpdateEvent(data);
     form.reset();
   };
 
@@ -61,11 +74,11 @@ const AddEventModal = ({
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Event</DialogTitle>
+          <DialogTitle>{initialData ? 'Edit Event' : 'Add Event'}</DialogTitle>
         </DialogHeader>
-<DialogDescription>
-  Create a new event by filling out the form below. All fields are required.
-</DialogDescription>
+        <DialogDescription>
+          {initialData ? 'Edit your event details below.' : 'Create a new event by filling out the form below.'} All fields are required.
+        </DialogDescription>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -158,4 +171,4 @@ const AddEventModal = ({
   );
 };
 
-export default AddEventModal;
+export default EditEventModal;

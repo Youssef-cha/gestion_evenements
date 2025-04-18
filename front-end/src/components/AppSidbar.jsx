@@ -20,6 +20,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { logout } from "@/redux/authSlice";
 import {
@@ -40,11 +41,11 @@ import {
 import { useDispatch } from "react-redux";
 import { Link } from "react-router";
 import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
 import axiosClient from "@/axios";
 import { toast } from "sonner";
 
 const AppSidbar = ({ user }) => {
+  const {open} = useSidebar();
   const sideBarItems = [
     {
       title: "home",
@@ -72,7 +73,7 @@ const AppSidbar = ({ user }) => {
     });
   };
   return (
-    <Sidebar className="bg-card border-border ">
+    <Sidebar collapsible="icon" className="bg-card border-border ">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="capitalize text-muted-foreground">
@@ -164,7 +165,7 @@ const AppSidbar = ({ user }) => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            {!user.verified && (
+            {!user.verified && open && (
               <button
                 onClick={onClickHandler}
                 className="block w-full bg-amber-200 mt-2 px-2 text-yellow-900 rounded-md py-1 text-sm font-semibold underline cursor-pointer "

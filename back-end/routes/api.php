@@ -14,4 +14,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('events', EventController::class);
     Route::get('/analytics/line-graph', [AnalyticsController::class, 'lineGraph']);
     Route::get('/analytics/pie-chart', [AnalyticsController::class, 'pieChart']);
+    Route::get('/analytics/bar-chart', [AnalyticsController::class, 'barChart']);
 });

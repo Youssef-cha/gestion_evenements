@@ -125,38 +125,31 @@ const EventAreaChart = () => {
       <CardHeader>
         <CardTitle>Event Analytics</CardTitle>
         <CardDescription>
-          <div className="flex items-center justify-between">
+          <div className="mt-2 w-full flex justify-between items-center">
             <span>
               Number of events created per month{" "}
               {loading
                 ? "..."
                 : selectedYear === "all"
                 ? "across all years"
-                : `in ${selectedYear || "N/A"}`}
-              .
+                : `for ${selectedYear}`}
             </span>
             {loading ? (
-              <Skeleton className="h-10 w-[180px]" />
+              <Skeleton className="h-10 w-[130px]" />
             ) : (
               <Select
-                value={selectedYear || "all"} // Ensure "all" is handled
+                value={selectedYear}
                 onValueChange={handleYearChange}
-                disabled={Object.keys(years).length <= 1} // Disable if only "all" data exists
+                disabled={loading || Object.keys(years).length <= 1}
               >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select Year" />
+                <SelectTrigger className="w-[130px]">
+                  <SelectValue placeholder="Select year" />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* Add "All Years" option first */}
-                  {years.all && years.all.length > 0 && (
-                    <SelectItem key="all" value="all">
-                      All Years
-                    </SelectItem>
-                  )}
-                  {/* Add specific years, excluding the "all" key */}
+                  <SelectItem value="all">All Years</SelectItem>
                   {Object.keys(years)
-                    .filter((key) => key !== "all") // Exclude "all" key
-                    .sort((a, b) => b - a) // Sort remaining years numerically
+                    .filter((key) => key !== "all")
+                    .sort((a, b) => b - a)
                     .map((year) => (
                       <SelectItem key={year} value={year}>
                         {year}
