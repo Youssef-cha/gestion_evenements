@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import { motion } from "framer-motion";
 import {
   Card,
   CardContent,
@@ -22,7 +22,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import axiosClient from "@/axios";
 import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
 
@@ -35,11 +34,13 @@ const chartConfig = {
 
 const EventAreaChart = () => {
   const [years, setYears] = useState({}); // Initialize as object
-  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedYear, setSelectedYear] = useState("all"); // Default to "All Years"
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true); // Add loading state
-  function sortByMonth(arr) {
-    var months = [
+  // Returns a NEW sorted array by month, does not mutate original
+  function getSortedByMonth(arr) {
+    if (!Array.isArray(arr)) return []; // Handle cases where arr might not be an array
+    const months = [
       "January",
       "February",
       "March",
@@ -53,27 +54,39 @@ const EventAreaChart = () => {
       "November",
       "December",
     ];
-    arr.sort((a, b) => months.indexOf(a.month) - months.indexOf(b.month));
+    // Create a shallow copy before sorting
+    return [...arr].sort(
+      (a, b) => months.indexOf(a.month) - months.indexOf(b.month)
+    );
   }
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
-      const response = await axiosClient.get("/analytics");
-      const groupedData = Object.groupBy(response.data, ({ year }) => year);
+      const response = await axiosClient.get("/analytics/line-graph");
+      const rawData = response.data;
+      const groupedData = Object.groupBy(rawData, ({ year }) => year);
 
-      setYears(groupedData);
+      // Calculate aggregated data for "All Years"
+      const allYearsDataMap = new Map();
+      rawData.forEach(({ month, events }) => {
+        allYearsDataMap.set(month, (allYearsDataMap.get(month) || 0) + events);
+      });
+      const allYearsAggregated = Array.from(
+        allYearsDataMap,
+        ([month, events]) => ({
+          month,
+          events,
+        })
+      );
+      const sortedAllYearsData = getSortedByMonth(allYearsAggregated);
 
-      // Set the default year to the most recent year
-      const sortedYears = Object.keys(groupedData).sort((a, b) => b - a);
-      if (sortedYears.length > 0) {
-        const latestYear = sortedYears[0];
-        setSelectedYear(latestYear);
-        sortByMonth(groupedData[latestYear]);
-        setChartData(groupedData[latestYear] || []);
-      } else {
-        setSelectedYear(null);
-        setChartData([]);
-      }
+      // Store yearly data and the aggregated "all" data
+      const processedYearsData = { ...groupedData, all: sortedAllYearsData };
+      setYears(processedYearsData);
+
+      // Set initial view to "All Years"
+      setSelectedYear("all");
+      setChartData(sortedAllYearsData);
     } catch (error) {
       console.error("Error fetching analytics:", error);
       setYears({});
@@ -90,8 +103,14 @@ const EventAreaChart = () => {
 
   const handleYearChange = (year) => {
     setSelectedYear(year);
-    sortByMonth(years[year]);
-    setChartData(years[year] || []);
+    if (year === "all") {
+      // Use the pre-calculated and sorted "all" data
+      setChartData(years.all || []);
+    } else {
+      // Sort a *copy* of the data for the specific selected year
+      const newChartData = getSortedByMonth(years[year] || []);
+      setChartData(newChartData);
+    }
   };
 
   const averageEvents =
@@ -108,23 +127,36 @@ const EventAreaChart = () => {
         <CardDescription>
           <div className="flex items-center justify-between">
             <span>
-              Number of events created per month in{" "}
-              {loading ? "..." : selectedYear || "N/A"}.
+              Number of events created per month{" "}
+              {loading
+                ? "..."
+                : selectedYear === "all"
+                ? "across all years"
+                : `in ${selectedYear || "N/A"}`}
+              .
             </span>
             {loading ? (
               <Skeleton className="h-10 w-[180px]" />
             ) : (
               <Select
-                value={selectedYear || ""}
+                value={selectedYear || "all"} // Ensure "all" is handled
                 onValueChange={handleYearChange}
-                disabled={Object.keys(years).length === 0} // Disable if no years
+                disabled={Object.keys(years).length <= 1} // Disable if only "all" data exists
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select Year" />
                 </SelectTrigger>
                 <SelectContent>
+                  {/* Add "All Years" option first */}
+                  {years.all && years.all.length > 0 && (
+                    <SelectItem key="all" value="all">
+                      All Years
+                    </SelectItem>
+                  )}
+                  {/* Add specific years, excluding the "all" key */}
                   {Object.keys(years)
-                    .sort((a, b) => b - a)
+                    .filter((key) => key !== "all") // Exclude "all" key
+                    .sort((a, b) => b - a) // Sort remaining years numerically
                     .map((year) => (
                       <SelectItem key={year} value={year}>
                         {year}
@@ -221,11 +253,21 @@ const EventAreaChart = () => {
             <div className="grid gap-2">
               <div className="flex items-center gap-2 font-medium leading-none">
                 {chartData.length > 0
-                  ? `Average of ${averageEvents} events per month this year.`
-                  : "No event data for this year."}
+                  ? `Average of ${averageEvents} events per month ${
+                      selectedYear === "all"
+                        ? "across all years"
+                        : `in ${selectedYear}`
+                    }.`
+                  : `No event data for ${
+                      selectedYear === "all"
+                        ? "any year"
+                        : `the year ${selectedYear}`
+                    }.`}
               </div>
               <div className="flex items-center gap-2 leading-none text-muted-foreground">
-                {selectedYear
+                {selectedYear === "all"
+                  ? "Showing aggregated data for all years"
+                  : selectedYear
                   ? `Showing data for the year ${selectedYear}`
                   : "No year selected"}
               </div>

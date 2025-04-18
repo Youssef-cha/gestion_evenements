@@ -12,5 +12,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/users', [UserController::class, 'update']);
     Route::apiResource('eventCategories', EventCategoryController::class);
     Route::apiResource('events', EventController::class);
-    Route::get('/analytics', [AnalyticsController::class, 'index']);
+    Route::get('/analytics/line-graph', [AnalyticsController::class, 'lineGraph']);
+    Route::get('/analytics/pie-chart', [AnalyticsController::class, 'pieChart']);
 });

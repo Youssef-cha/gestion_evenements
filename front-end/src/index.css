@@ -3,6 +3,48 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* full calendar style */
+
+  /* Neutral Light Theme for FullCalendar - Higher Contrast */
+  --fc-list-event-hover-bg-color: rgb(240, 240, 240);
+  --fc-small-font-size: 0.85em;
+  --fc-page-bg-color: #ffffff; /* White */
+  --fc-neutral-bg-color: #fafafa; /* Very light grey */
+  --fc-neutral-text-color: #424242; /* Darker grey */
+  --fc-border-color: #eeeeee; /* Lighter grey */
+  --fc-button-text-color: #000000; /* Black */
+  --fc-button-bg-color: #f5f5f5; /* Light grey */
+  --fc-button-border-color: #e0e0e0; /* Lighter grey */
+  --fc-button-hover-bg-color: #e0e0e0; /* Lighter grey */
+  --fc-button-hover-border-color: #bdbdbd; /* Medium light grey */
+  --fc-button-active-bg-color: #bdbdbd; /* Medium light grey */
+  --fc-button-active-border-color: #757575; /* Medium grey */
+  --fc-event-bg-color: #f5f5f5; /* Light grey */
+  --fc-event-border-color: #e0e0e0; /* Lighter grey */
+  --fc-event-text-color: #212121; /* Dark grey */
+  --fc-event-selected-overlay-color: rgba(
+    0,
+    0,
+    0,
+    0.15
+  ); /* Slightly darker overlay */
+  --fc-more-link-bg-color: #f5f5f5; /* Light grey */
+  --fc-more-link-text-color: #424242; /* Darker grey */
+  --fc-event-resizer-thickness: 8px;
+  --fc-event-resizer-dot-total-width: 8px;
+  --fc-event-resizer-dot-border-width: 1px;
+  --fc-non-business-color: rgba(
+    230,
+    230,
+    230,
+    0.3
+  ); /* Lighter grey transparent */
+  --fc-bg-event-color: #f5f5f5; /* Light grey */
+  --fc-bg-event-opacity: 0.3;
+  --fc-highlight-color: rgba(238, 238, 238, 0.3); /* Lighter grey transparent */
+  --fc-today-bg-color: rgba(224, 224, 224, 0.25); /* Lighter grey transparent */
+  --fc-now-indicator-color: #616161; /* Darker grey */
+
   --radius: 0.75rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -38,6 +80,48 @@
 }
 
 .dark {
+  /* full calendar style */
+
+  /* Neutral Dark Theme for FullCalendar - Higher Contrast */
+  --fc-list-event-hover-bg-color: rgb(26, 26, 26);
+  --fc-small-font-size: 0.85em;
+  --fc-page-bg-color: #121212; /* Near black */
+  --fc-neutral-bg-color: #1e1e1e; /* Very dark grey */
+  --fc-neutral-text-color: #e0e0e0; /* Lighter grey */
+  --fc-border-color: #333333; /* Dark grey */
+  --fc-button-text-color: #ffffff; /* White */
+  --fc-button-bg-color: #2c2c2c; /* Dark grey */
+  --fc-button-border-color: #424242; /* Medium dark grey */
+  --fc-button-hover-bg-color: #424242; /* Medium dark grey */
+  --fc-button-hover-border-color: #616161; /* Medium grey */
+  --fc-button-active-bg-color: #616161; /* Medium grey */
+  --fc-button-active-border-color: #757575; /* Medium light grey */
+  --fc-event-bg-color: #2c2c2c; /* Dark grey */
+  --fc-event-border-color: #424242; /* Medium dark grey */
+  --fc-event-text-color: #f5f5f5; /* Very light grey */
+  --fc-event-selected-overlay-color: rgba(
+    255,
+    255,
+    255,
+    0.15
+  ); /* Slightly lighter overlay */
+  --fc-more-link-bg-color: #2c2c2c; /* Dark grey */
+  --fc-more-link-text-color: #e0e0e0; /* Lighter grey */
+  --fc-event-resizer-thickness: 8px;
+  --fc-event-resizer-dot-total-width: 8px;
+  --fc-event-resizer-dot-border-width: 1px;
+  --fc-non-business-color: rgba(44, 44, 44, 0.3); /* Dark grey transparent */
+  --fc-bg-event-color: #2c2c2c; /* Dark grey */
+  --fc-bg-event-opacity: 0.3;
+  --fc-highlight-color: rgba(
+    66,
+    66,
+    66,
+    0.3
+  ); /* Medium dark grey transparent */
+  --fc-today-bg-color: rgba(97, 97, 97, 0.2); /* Medium grey transparent */
+  --fc-now-indicator-color: #bdbdbd; /* Lighter grey */
+
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
@@ -45,7 +129,7 @@
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.546 0.245 262.881);
-  --primary-foreground: oklch(0.379 0.146 265.522);
+  --primary-foreground: oklch(0.141 0.005 285.823);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.274 0.006 286.033);
@@ -70,8 +154,6 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.488 0.243 264.376);
 }
-
-
 
 @theme {
   --color-bl-100: #d9e2fb;
@@ -142,17 +224,16 @@
 }
 
 .calendar-container::-webkit-scrollbar-track {
-  @apply bg-neutral-800;
+  @apply  bg-neutral-200 rounded-full overflow-hidden;
 }
 
 .calendar-container::-webkit-scrollbar-thumb {
-  @apply bg-neutral-700 rounded-full;
+  @apply bg-neutral-700  rounded-full;
 }
 
 .calendar-container::-webkit-scrollbar-thumb:hover {
-  @apply bg-neutral-600;
+  @apply bg-neutral-400 dark:bg-neutral-600;
 }
-
 .calendar-header {
   @apply text-xl rounded inset-x-0 top-0 bg-white dark:bg-neutral-900 sticky lg:text-2xl py-4 lg:py-6 mb-4 font-bold px-4 lg:px-7;
 }
@@ -167,37 +248,4 @@
 
 .calendar-event-date {
   @apply text-gray-800 dark:text-neutral-100 text-xs lg:text-sm block mt-1;
-}
-
-/* FullCalendar Customization */
-.calendar-wrapper .fc-toolbar-title {
-  @apply text-gray-900 dark:text-white;
-}
-
-.calendar-wrapper .fc-button {
-  @apply bg-gray-200 dark:bg-neutral-800 text-gray-900 dark:text-white;
-}
-
-.calendar-wrapper .fc-button-active {
-  @apply bg-gray-300 dark:bg-neutral-700;
-}
-
-.calendar-wrapper .fc-col-header {
-  @apply bg-gray-100 dark:bg-neutral-800;
-}
-
-.calendar-wrapper .fc-col-header-cell-cushion {
-  @apply text-gray-900 dark:text-white;
-}
-
-.calendar-wrapper .fc-daygrid-day {
-  @apply bg-white dark:bg-neutral-900;
-}
-
-.calendar-wrapper .fc-daygrid-day-number {
-  @apply text-gray-900 dark:text-white;
-}
-
-.fc .fc-daygrid-day.fc-day-today {
-  @apply bg-slate-200 dark:bg-slate-800;
 }

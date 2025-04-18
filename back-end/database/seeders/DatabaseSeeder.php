@@ -17,9 +17,11 @@ class DatabaseSeeder extends Seeder
     {
         $user = User::factory()->create([
             'name' => 'youssef charroud',
-            'email' => 'youssef@example.com',
-            'password' => bcrypt('password'),
+            'email' => 'youssef@email.com',
+            'password' => bcrypt('123'),
         ]);
-        Event::factory(500)->for($user)->create();
+        EventCategory::factory()->has(Event::factory(10)->for($user))->create();
+        EventCategory::factory(2)->has(Event::factory(5)->for($user))->create();
+        EventCategory::factory(3)->has(Event::factory(1)->for($user))->create();
     }
 }

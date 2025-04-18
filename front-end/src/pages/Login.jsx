@@ -39,10 +39,10 @@ const Login = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-neutral-800 lg:h-[550px] rounded-md overflow-hidden lg:w-5xl w-10/12 flex"
+      className="bg-card text-card-foreground lg:h-[550px] rounded-md overflow-hidden lg:w-5xl w-10/12 flex"
     >
       <div className="lg:w-1/2 w-full p-10">
-        <h2 className="font-bold text-3xl capitalize text-center my-10">
+        <h2 className="font-bold text-3xl capitalize text-center my-10 text-foreground">
           login
         </h2>
         <Form {...form}>
