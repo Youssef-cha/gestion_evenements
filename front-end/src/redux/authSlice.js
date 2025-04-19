@@ -61,6 +61,9 @@ const authSlice = createSlice({
     setUserVerified: (state) => {
       state.user.verified = true;
     },
+    setToken: (state, action) => {
+      state.token = action.payload.token;
+    },
   },
   extraReducers: (build) => {
     build
@@ -70,7 +73,6 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.formLoading = false;
-        localStorage.setItem("access_token", action.payload.token);
         state.token = action.payload.token;
       })
       .addCase(login.rejected, (state, action) => {
@@ -83,7 +85,6 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state, action) => {
         state.formLoading = false;
-        localStorage.setItem("access_token", action.payload.token);
         state.token = action.payload.token;
       })
       .addCase(register.rejected, (state, action) => {
@@ -135,5 +136,5 @@ export {
   getAuthLoader,
   getFormLoading,
 };
-export const { setLoader, setUserVerified } = authSlice.actions;
+export const { setLoader, setUserVerified, setToken } = authSlice.actions;
 export default authSlice.reducer;

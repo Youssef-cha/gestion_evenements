@@ -71,7 +71,7 @@ const ProfilePage = () => {
       <div className="bg-card border-border rounded-lg p-6 md:p-8 mb-8 shadow-lg">
         <div className="flex flex-col items-center md:items-start md:flex-row gap-6">
           <Avatar className="w-24 h-24">
-            <AvatarImage src="" alt="User profile" />
+            <AvatarImage src={user.avatar} alt="User profile" />
             <AvatarFallback className="text-5xl bg-muted text-muted-foreground font-bold">
               <Cat size={80} />
             </AvatarFallback>

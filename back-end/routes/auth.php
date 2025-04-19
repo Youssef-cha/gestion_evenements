@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GoogleAuthController;
 use Illuminate\Support\Facades\Route;
 // authentication routes
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware(['auth:sanctum', 'validIp']);
 Route::post('/user', [AuthController::class, 'user'])->middleware(['auth:sanctum', 'validIp']);
+
+// google auth
+Route::post('/auth/google', [GoogleAuthController::class, 'handleGoogleCallback']);
 
 // email verification routes
 Route::post('/email/verification-notification', [AuthController::class, 'resendEmail'])->middleware(['auth:sanctum', 'throttle:6,1'])->name('verification.send');

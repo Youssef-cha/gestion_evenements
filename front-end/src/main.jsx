@@ -5,11 +5,15 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import ColorProvider from "./contexts/ColorProvider";
 import { Toaster } from "sonner";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 createRoot(document.getElementById("root")).render(
-  <Provider store={store}>
-    <ColorProvider>
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <Provider store={store}>
+      <ColorProvider>
+   
         <App />
         <Toaster />
-    </ColorProvider>
-  </Provider>
+      </ColorProvider>
+    </Provider>
+  </GoogleOAuthProvider>
 );

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Link } from "react-router"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Loader2, User, Mail, Lock } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { useDispatch, useSelector } from "react-redux"
 import { getFormLoading, register } from "@/redux/authSlice"
 import { motion } from "framer-motion"
@@ -72,14 +72,11 @@ const Register = () => {
                   <FormItem>
                     <FormLabel className="text-neutral-700 dark:text-neutral-300">Full Name</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 h-5 w-5 text-neutral-400" />
-                        <Input
-                          placeholder="Enter your name"
-                          className="h-11 pl-10 dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600 transition-all"
-                          {...field}
-                        />
-                      </div>
+                      <Input
+                        placeholder="Enter your name"
+                        className="h-11 dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600 transition-all"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className="text-red-500" />
                   </FormItem>
@@ -93,14 +90,11 @@ const Register = () => {
                   <FormItem>
                     <FormLabel className="text-neutral-700 dark:text-neutral-300">Email Address</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-5 w-5 text-neutral-400" />
-                        <Input
-                          placeholder="name@example.com"
-                          className="h-11 pl-10 dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600 transition-all"
-                          {...field}
-                        />
-                      </div>
+                      <Input
+                        placeholder="name@example.com"
+                        className="h-11 dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600 transition-all"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className="text-red-500" />
                   </FormItem>
@@ -114,15 +108,12 @@ const Register = () => {
                   <FormItem>
                     <FormLabel className="text-neutral-700 dark:text-neutral-300">Password</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-5 w-5 text-neutral-400" />
-                        <Input
-                          type="password"
-                          placeholder="Create a secure password"
-                          className="h-11 pl-10 dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600 transition-all"
-                          {...field}
-                        />
-                      </div>
+                      <Input
+                        type="password"
+                        placeholder="Create a secure password"
+                        className="h-11 dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600 transition-all"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className="text-red-500" />
                   </FormItem>
@@ -136,22 +127,19 @@ const Register = () => {
                   <FormItem>
                     <FormLabel className="text-neutral-700 dark:text-neutral-300">Confirm Password</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-5 w-5 text-neutral-400" />
-                        <Input
-                          type="password"
-                          placeholder="Confirm your password"
-                          className="h-11 pl-10 dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600 transition-all"
-                          {...field}
-                        />
-                      </div>
+                      <Input
+                        type="password"
+                        placeholder="Confirm your password"
+                        className="h-11 dark:bg-neutral-700 dark:border-neutral-600 focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600 transition-all"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className="text-red-500" />
                   </FormItem>
                 )}
               />
 
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="pt-4">
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="pt-2">
                 <Button
                   className="w-full h-11 bg-gradient-to-r from-neutral-800 to-neutral-700 hover:from-neutral-700 hover:to-neutral-600 dark:from-neutral-600 dark:to-neutral-700 dark:hover:from-neutral-500 dark:hover:to-neutral-600 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
                   type="submit"
@@ -168,7 +156,7 @@ const Register = () => {
                 </Button>
               </motion.div>
 
-              <div className="mt-6 text-center">
+              <div className="mt-6 text-center space-y-2">
                 <p className="text-neutral-600 dark:text-neutral-400">
                   Already have an account?{" "}
                   <Link
@@ -176,6 +164,17 @@ const Register = () => {
                     to="/login"
                   >
                     Log in
+                  </Link>
+                </p>
+
+                <p className="text-neutral-500 dark:text-neutral-500 text-sm">
+                  By signing up, you agree to our{" "}
+                  <Link className="text-neutral-700 dark:text-neutral-300 hover:underline" to="/terms">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link className="text-neutral-700 dark:text-neutral-300 hover:underline" to="/privacy">
+                    Privacy Policy
                   </Link>
                 </p>
               </div>
