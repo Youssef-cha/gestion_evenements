@@ -16,9 +16,9 @@ const GuestLayout = () => {
       });
     }
   }, [errors, formLoading]);
-  if (user) return <Navigate to={"/"} replace />;
+  if (user) return <Navigate to={"/home"} replace />;
   return (
-    <main className="flex dark:bg-neutral-900  bg-neutral-100 justify-center items-center min-h-screen">
+    <main className="">
       <Outlet />
     </main>
   );

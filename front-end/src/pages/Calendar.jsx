@@ -1,9 +1,9 @@
 import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
+import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
+import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import CalendarSkeleton from "@/components/CalendarSkeleton";
@@ -11,10 +11,17 @@ import axiosClient from "@/axios";
 import AddEventModal from "@/components/AddEventModal";
 import { motion } from "framer-motion";
 import CalendarSettings from "@/components/CalendarSettings";
-import { Edit } from "lucide-react";
+import { Edit, Trash2, CalendarIcon } from "lucide-react";
 import EditEventModal from "@/components/EditEventModal";
-// Remove formatDate import and add date-fns imports
 import { format } from "date-fns";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Calendar() {
   const { open } = useSidebar();
@@ -34,8 +41,13 @@ export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
-  const fetchEvents = async () => {
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isTablet = useMediaQuery("(max-width: 768px)");
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+
+  const fetchEvents = useCallback(async () => {
     setIsEventsLoading(true);
     try {
       const { data } = await axiosClient.get("events");
@@ -45,21 +57,21 @@ export default function Calendar() {
     } finally {
       setIsEventsLoading(false);
     }
-  };
+  }, []);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const { data } = await axiosClient.get("eventCategories");
       setCategories(data);
     } catch (error) {
       console.error("Failed to fetch categories:", error);
     }
-  };
+  }, []);
 
-  useEffect(() => {
+  // Filter events based on settings
+  const filteredEvents = useMemo(() => {
     const currentDate = new Date().setHours(0, 0, 0, 0);
-    localStorage.setItem("calendar_settings", JSON.stringify(settings));
-    const filteredEvents = allEvents.filter((event) => {
+    return allEvents.filter((event) => {
       const eventDate = new Date(event.start_time).setHours(0, 0, 0, 0);
       const isPastEvent = eventDate < currentDate;
       return (
@@ -67,89 +79,176 @@ export default function Calendar() {
         (settings.showFutureEvents || isPastEvent)
       );
     });
-    setEvents(filteredEvents);
   }, [settings, allEvents]);
 
+  // Update events when filtered events change
+  useEffect(() => {
+    setEvents(filteredEvents);
+  }, [filteredEvents]);
+
+  // Save settings to localStorage
+  useEffect(() => {
+    localStorage.setItem("calendar_settings", JSON.stringify(settings));
+  }, [settings]);
+
+  // Show skeleton on sidebar toggle
   useEffect(() => {
     setShowSkeleton(true);
     const timer = setTimeout(() => setShowSkeleton(false), 200);
     return () => clearTimeout(timer);
   }, [open]);
 
+  // Fetch data on component mount
   useEffect(() => {
     fetchEvents();
     fetchCategories();
-  }, []);
+  }, [fetchEvents, fetchCategories]);
 
-  const handleDateClick = (selected) => {
+  const handleDateClick = useCallback((selected) => {
     setSelectedDate(selected);
     setIsDialogOpen(true);
-  };
+  }, []);
 
-  const handleAddEvent = async (data) => {
-    try {
-      const eventData = {
-        ...data,
-        start_time: format(selectedDate.start, "yyyy-MM-dd HH:mm:ss"),
-        end_time: format(selectedDate.end, "yyyy-MM-dd HH:mm:ss"),
-      };
-      const { data: newEvent } = await axiosClient.post("events", eventData);
-      setAllEvents((prev) => [newEvent, ...prev]);
-      setIsDialogOpen(false);
-    } catch (error) {
-      console.error("Failed to add event:", error);
-    } finally {
-      selectedDate?.view.calendar.unselect();
-      setSelectedDate(null);
-    }
-  };
+  const handleAddEvent = useCallback(
+    async (data) => {
+      if (!selectedDate) return;
 
-  const handleEventClick = async (id, title) => {
-    if (
-      window.confirm(`Are you sure you want to delete the event '${title}'`)
-    ) {
       try {
-        await axiosClient.delete(`events/${id}`);
-        setAllEvents(allEvents.filter((event) => event.id != id));
+        const eventData = {
+          ...data,
+          start_time: format(selectedDate.start, "yyyy-MM-dd HH:mm:ss"),
+          end_time: format(selectedDate.end, "yyyy-MM-dd HH:mm:ss"),
+        };
+        const { data: newEvent } = await axiosClient.post("events", eventData);
+        setAllEvents((prev) => [newEvent, ...prev]);
+        setIsDialogOpen(false);
       } catch (error) {
-        console.error("Failed to delete event:", error);
+        console.error("Failed to add event:", error);
+      } finally {
+        selectedDate?.view.calendar.unselect();
+        setSelectedDate(null);
       }
-    }
-  };
+    },
+    [selectedDate]
+  );
 
-  const handleEditClick = (event) => {
+  const handleEventClick = useCallback(async (id, title) => {
+    setConfirmDelete({ id, title });
+  }, []);
+
+  const confirmDeleteEvent = useCallback(async () => {
+    if (!confirmDelete) return;
+
+    try {
+      await axiosClient.delete(`events/${confirmDelete.id}`);
+      setAllEvents((prev) =>
+        prev.filter((event) => event.id !== confirmDelete.id)
+      );
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+    } finally {
+      setConfirmDelete(null);
+    }
+  }, [confirmDelete]);
+
+  const handleEditClick = useCallback((event) => {
     setSelectedEvent(event);
     setIsEditDialogOpen(true);
-  };
+  }, []);
 
-  const handleUpdateEvent = async (newData) => {
+  const handleUpdateEvent = useCallback(
+    async (newData) => {
+      if (!selectedEvent) return;
+
+      try {
+        const eventData = {
+          ...newData,
+          start_time: selectedEvent.start_time,
+          end_time: selectedEvent.end_time,
+        };
+        const { data } = await axiosClient.put(
+          `events/${selectedEvent.id}`,
+          eventData
+        );
+        setAllEvents((prev) =>
+          prev.map((event) => (event.id == selectedEvent.id ? data : event))
+        );
+        setIsEditDialogOpen(false);
+      } catch (error) {
+        console.error("Failed to update event:", error);
+      } finally {
+        setSelectedEvent(null);
+      }
+    },
+    [selectedEvent]
+  );
+
+  const updateDates = async (selected) => {
+    const { event } = selected;
+    const newStartTime = format(event.start, "yyyy-MM-dd HH:mm:ss");
+    const newEndTime = format(event.end, "yyyy-MM-dd HH:mm:ss");
+
     try {
       const eventData = {
-        ...newData,
-        start_time: selectedEvent.start_time,
-        end_time: selectedEvent.end_time,
+        start_time: newStartTime,
+        end_time: newEndTime,
       };
-      const { data } = await axiosClient.put(
-        `events/${selectedEvent.id}`,
-        eventData
+      const { data } = await axiosClient.patch(`events/${event.id}`, eventData);
+
+      const updatedEvent = {
+        ...data,
+        start_time: newStartTime,
+        end_time: newEndTime,
+      };
+
+      setEvents(events.map((el) => (el.id == event.id ? updatedEvent : el))
       );
-      setAllEvents((prev) =>
-        prev.map((event) => (event.id === selectedEvent.id ? data : event))
+      console.log(events)
+      setAllEvents(allEvents.map((el) => (el.id == event.id ? updatedEvent : el))
       );
-      setIsEditDialogOpen(false);
     } catch (error) {
-      console.error("Failed to update event:", error);
-    } finally {
-      setSelectedEvent(null);
+      console.error("Failed to update event date:", error);
+      selected.revert();
     }
   };
+
+  // Get calendar view based on screen size
+  const getCalendarView = useMemo(() => {
+    if (isMobile) return "listMonth";
+    return "dayGridMonth";
+  }, [isMobile]);
+
+  // Get header toolbar configuration based on screen size
+  const getHeaderToolbar = useMemo(() => {
+    if (isMobile) {
+      return {
+        left: "prev,next",
+        center: "title",
+        right: "dayGridMonth,listMonth",
+      };
+    } else if (isTablet) {
+      return {
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,listMonth,timeGridDay",
+      };
+    } else {
+      return {
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
+      };
+    }
+  }, [isMobile, isTablet]);
+
+  // Format events for FullCalendar
 
   const renderEventList = () => {
     if (isEventsLoading) {
       return Array.from({ length: 4 }).map((_, index) => (
         <li
           key={index}
-          className="calendar-event-item opacity-50 w-[280px] sm:w-[320px] lg:w-full min-h-[100px] sm:min-h-[120px]"
+          className="calendar-event-item opacity-50 w-full min-h-[100px] sm:min-h-[120px] p-3 border rounded-md"
         >
           <Skeleton className="h-5 w-3/4 mb-2" />
           <div className="flex items-center gap-2 mt-1">
@@ -162,116 +261,104 @@ export default function Calendar() {
 
     if (events.length === 0) {
       return (
-        <div className="italic text-center text-gray-500 text-base lg:text-lg font-bold w-[280px] sm:w-[320px] lg:w-full min-h-[100px] sm:min-h-[120px]">
-          No Events Present
+        <div className="flex flex-col items-center justify-center text-center text-gray-500 p-6 border border-dashed rounded-md w-full">
+          <CalendarIcon className="h-12 w-12 mb-2 text-gray-400" />
+          <p className="text-base lg:text-lg font-medium">No Events Found</p>
+          <p className="text-sm text-gray-400 mt-1">
+            Click on the calendar to add a new event
+          </p>
         </div>
       );
     }
 
     return events.map((event) => (
-      <li
-        className="calendar-event-item w-[250px] sm:w-[300px] md:w-[320px] lg:w-full xl:w-[380px] 2xl:w-full min-h-[90px] sm:min-h-[110px] md:min-h-[120px] p-2 sm:p-3 md:p-4 hover:shadow-lg transition-all duration-300"
+      <motion.li
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="calendar-event-item w-full min-h-[90px] p-3 border rounded-md hover:shadow-md transition-all duration-300"
         key={event.id}
       >
-        <div className="flex justify-between items-start gap-1 sm:gap-2">
-          <span className="text-xs sm:text-sm md:text-base xl:text-lg font-medium line-clamp-2">
+        <div className="flex justify-between items-start gap-2">
+          <span className="text-sm md:text-base font-medium line-clamp-2">
             {event.title}
           </span>
           <div className="flex gap-2 shrink-0">
-            <button
-              onClick={() => handleEditClick(event)}
-              className="text-blue-500 hover:text-blue-700 transition-colors duration-200"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                />
-              </svg>
-            </button>
-            <button
-              onClick={() => handleEventClick(event.id, event.title)}
-              className="text-red-500 hover:text-red-700 transition-colors duration-200"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-4 h-4 sm:w-5 sm:h-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                />
-              </svg>
-            </button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => handleEditClick(event)}
+                    className="text-blue-500 hover:text-blue-700 transition-colors duration-200 p-1 rounded-full hover:bg-blue-50"
+                    aria-label="Edit event"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Edit event</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => handleEventClick(event.id, event.title)}
+                    className="text-red-500 hover:text-red-700 transition-colors duration-200 p-1 rounded-full hover:bg-red-50"
+                    aria-label="Delete event"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Delete event</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
         <div className="flex items-center gap-2 mt-2">
-          <span className="calendar-event-category text-xs sm:text-sm">
+          <Badge variant="outline" className="text-xs">
             {event.category?.name || "Uncategorized"}
-          </span>
+          </Badge>
         </div>
-        <label className="calendar-event-date text-xs sm:text-sm mt-2 block">
-          {format(new Date(event.start_time), "MMM d, yyyy")} /{" "}
+        <div className="text-xs text-gray-500 mt-2">
+          {format(new Date(event.start_time), "MMM d, yyyy")} -{" "}
           {format(new Date(event.end_time), "MMM d, yyyy")}
-        </label>
-      </li>
+        </div>
+      </motion.li>
     ));
-  };
-  const updateDates = async (selected) => {
-    const { event } = selected;
-    const newStartTime = format(event.start, "yyyy-MM-dd HH:mm:ss");
-    const newEndTime = format(event.end, "yyyy-MM-dd HH:mm:ss");
-
-    try {
-      const eventData = {
-        start_time: newStartTime,
-        end_time: newEndTime,
-      };
-      const { data } = await axiosClient.patch(`events/${event.id}`, eventData);
-      setEvents(events.map((el) => (el.id == event.id ? data : el)));
-      setAllEvents(allEvents.map((el) => (el.id == event.id ? data : el)));
-    } catch (error) {
-      console.error("Failed to update event date:", error);
-      selected.revert();
-    }
   };
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row w-full px-2 sm:px-4 lg:px-10 justify-start items-start gap-2 sm:gap-4 lg:gap-8">
-        <div className="calendar-container w-full lg:w-3/12">
-          <div className="calendar-header justify-between flex items-center p-2 sm:p-3">
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold">
-              Calendar Events
+      <div className="flex flex-col lg:flex-row w-full p-3 sm:p-4 lg:p-6 gap-4 lg:gap-6">
+        <div className="calendar-container w-full lg:w-3/12   rounded-lg shadow-sm mb-4 lg:mb-0 border">
+          <div className="calendar-header justify-between flex items-center p-3 sm:p-4 border-b dark:border-gray-700">
+            <h3 className="text-base sm:text-lg font-bold flex items-center gap-2">
+              <CalendarIcon className="h-5 w-5" />
+              Events
             </h3>
             <CalendarSettings settings={settings} setSettings={setSettings} />
           </div>
-          <ul className="flex flex-row lg:flex-col gap-2 sm:gap-4 px-2 sm:px-4 lg:px-7 py-4 w-fit sm:w-auto h-fit">
-            {renderEventList()}
-          </ul>
+          <div className="overflow-y-auto max-h-[calc(100vh-250px)] lg:max-h-[calc(100vh-200px)]">
+            <ul className="flex flex-col gap-3 p-3 sm:p-4">
+              {renderEventList()}
+            </ul>
+          </div>
         </div>
-        <div className="w-full lg:w-9/12 mt-2 sm:mt-4 lg:mt-8">
+
+        <div className="w-full lg:w-9/12  rounded-lg shadow-sm border">
           {showSkeleton ? (
             <CalendarSkeleton />
           ) : (
             <motion.div
-              initial={{ opacity: 0, translateY: 10 }}
-              animate={{ opacity: 1, translateY: 0 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="calendar-wrapper rounded-lg shadow-sm"
+              className="calendar-wrapper rounded-lg overflow-hidden"
             >
               <FullCalendar
                 eventResize={updateDates}
@@ -279,14 +366,25 @@ export default function Calendar() {
                 editable
                 eventDurationEditable
                 weekends={settings.showWeekendDays}
-                height="85vh"
-                headerToolbar={{
-                  left: "prev,next today",
-                  center: "title",
-                  right:
-                    window.innerWidth < 640
-                      ? "dayGridMonth,listMonth"
-                      : "dayGridMonth,timeGridWeek,listMonth",
+                height={isMobile ? "70vh" : isDesktop ? "85vh" : "75vh"}
+                headerToolbar={getHeaderToolbar}
+                views={{
+                  timeGridDay: {
+                    titleFormat: {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    },
+                  },
+                  timeGridWeek: {
+                    titleFormat: { year: "numeric", month: "short" },
+                  },
+                  dayGridMonth: {
+                    titleFormat: { year: "numeric", month: "long" },
+                  },
+                  listMonth: {
+                    titleFormat: { year: "numeric", month: "long" },
+                  },
                 }}
                 events={events.map((event) => {
                   const startDate = new Date(event.start_time);
@@ -304,6 +402,9 @@ export default function Calendar() {
                     start: startDate,
                     end: endDate,
                     allDay: isAllDay,
+                    extendedProps: {
+                      category: event.category?.name || "Uncategorized",
+                    },
                   };
                 })}
                 eventDrop={updateDates}
@@ -314,19 +415,61 @@ export default function Calendar() {
                   timeGridPlugin,
                   listPlugin,
                 ]}
-                initialView={
-                  window.innerWidth < 640 ? "listMonth" : "dayGridMonth"
-                }
+                initialView={getCalendarView}
                 selectable={true}
                 select={handleDateClick}
-                eventClick={({ event: { id, title } }) => {
-                  handleEventClick(id, title);
+                eventClick={({ event }) => {
+                  handleEventClick(event.id, event.title);
                 }}
+                eventContent={(eventInfo) => {
+                  return (
+                    <div className="flex flex-col p-1">
+                      <div className="font-medium text-xs md:text-sm truncate">
+                        {eventInfo.event.title}
+                      </div>
+                      {!isMobile && (
+                        <div className="text-xs opacity-80">
+                          {eventInfo.event.extendedProps.category}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }}
+                contentHeight="auto"
+                aspectRatio={isMobile ? 1.2 : isTablet ? 1.5 : 1.8}
               />
             </motion.div>
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full">
+            <h3 className="text-lg font-bold mb-2">Delete Event</h3>
+            <p className="mb-4">
+              Are you sure you want to delete "{confirmDelete.title}"? This
+              action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="px-4 py-2 border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteEvent}
+                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <AddEventModal
         categories={categories}
         isDialogOpen={isDialogOpen}

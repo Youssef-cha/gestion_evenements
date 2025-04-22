@@ -177,13 +177,7 @@
   }
 }
 
-.calendar-container {
-  @apply w-full relative lg:w-3/12  overflow-y-auto max-h-[85vh] ;
-}
 
-.calendar-container::-webkit-scrollbar {
-  @apply w-2;
-}
 
 .calendar-container::-webkit-scrollbar-track {
   @apply bg-neutral-200 rounded-full overflow-hidden;

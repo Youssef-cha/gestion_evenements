@@ -37,6 +37,7 @@ import {
   LogOut,
   User2,
   UserPen,
+  Users,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router";
@@ -45,7 +46,7 @@ import axiosClient from "@/axios";
 import { toast } from "sonner";
 
 const AppSidbar = ({ user }) => {
-  const {open} = useSidebar();
+  const { open } = useSidebar();
   const sideBarItems = [
     {
       title: "home",
@@ -61,6 +62,11 @@ const AppSidbar = ({ user }) => {
       title: "Analytics",
       icon: <ChartLine className="text-muted-foreground" />,
       link: "/analytics",
+    },
+    {
+      title: "Teams and Members",
+      icon: <Users className="text-muted-foreground" />,
+      link: "/teams-members",
     },
   ];
   const dispatch = useDispatch();

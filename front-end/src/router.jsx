@@ -11,6 +11,8 @@ import ResetPassword from "./pages/ResetPassword";
 import Calendar from "./pages/Calendar";
 import ForgotPassword from "./pages/ForgotPassword";
 import Analytics from "./pages/Analytics";
+import Landing from "./pages/Landing";
+import Teams from "./pages/Teams";
 
 const router = createBrowserRouter([
   {
@@ -18,7 +20,7 @@ const router = createBrowserRouter([
 
     children: [
       {
-        path: "/",
+        path: "/home",
         element: <Home />,
       },
       {
@@ -34,6 +36,10 @@ const router = createBrowserRouter([
         element: <Analytics />,
       },
       {
+        path: "/teams-members",
+        element: <Teams />,
+      },
+      {
         path: "/profile",
         element: <Profile />,
       },
@@ -43,6 +49,10 @@ const router = createBrowserRouter([
     element: <GuestLayout />,
 
     children: [
+      {
+        path: "/",
+        element: <Landing />,
+      },
       {
         path: "login",
         element: <Login />,

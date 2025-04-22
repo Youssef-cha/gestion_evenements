@@ -73,8 +73,7 @@ const ProfilePage = () => {
           <Avatar className="w-24 h-24">
             <AvatarImage src={user.avatar} alt="User profile" />
             <AvatarFallback className="text-5xl bg-muted text-muted-foreground font-bold">
-              <Cat size={80} />
-            </AvatarFallback>
+{user.name[0]}            </AvatarFallback>
           </Avatar>
 
           <div className="flex-1 flex flex-col items-center md:items-start">
