@@ -15,13 +15,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::factory()->create([
+        // $user = User::factory()->create([
+        //     'name' => 'youssef charroud',
+        //     'email' => 'youssef@email.com',
+        //     'password' => bcrypt('123'),
+        // ]);
+        User::factory(10)->create([
             'name' => 'youssef charroud',
-            'email' => 'youssef@email.com',
-            'password' => bcrypt('123'),
         ]);
-        EventCategory::factory()->has(Event::factory(100)->for($user))->create();
-        EventCategory::factory(2)->has(Event::factory(50)->for($user))->create();
-        EventCategory::factory(3)->has(Event::factory(80)->for($user))->create();
+        // EventCategory::factory()->has(Event::factory(100)->for($user))->create();
+        // EventCategory::factory(2)->has(Event::factory(50)->for($user))->create();
+        // EventCategory::factory(3)->has(Event::factory(80)->for($user))->create();
     }
 }

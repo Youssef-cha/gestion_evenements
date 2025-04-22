@@ -12,16 +12,17 @@ import AddEventModal from "@/components/AddEventModal";
 import { motion } from "framer-motion";
 import CalendarSettings from "@/components/CalendarSettings";
 import { Edit, Trash2, CalendarIcon } from "lucide-react";
-import EditEventModal from "@/components/EditEventModal";
 import { format } from "date-fns";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import EventDetailsModal from "@/components/EventDetailsModal";
 
 export default function Calendar() {
   const { open } = useSidebar();
@@ -37,11 +38,13 @@ export default function Calendar() {
   const [showSkeleton, setShowSkeleton] = useState(true);
   const [isEventsLoading, setIsEventsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [categories, setCategories] = useState([]);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [selectedEventId, setSelectedEventId] = useState(null);
+  const [selectedEventForModal, setSelectedEventForModal] = useState(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const isMobile = useMediaQuery("(max-width: 640px)");
   const isTablet = useMediaQuery("(max-width: 768px)");
@@ -106,34 +109,88 @@ export default function Calendar() {
 
   const handleDateClick = useCallback((selected) => {
     setSelectedDate(selected);
+    setSelectedEvent(null);
     setIsDialogOpen(true);
   }, []);
 
-  const handleAddEvent = useCallback(
-    async (data) => {
-      if (!selectedDate) return;
+  const handleEditClick = useCallback((event) => {
+    setSelectedEvent(event);
+    setSelectedDate(null);
+    setIsDialogOpen(true);
+  }, []);
 
+  const handleEventSubmit = useCallback(
+    async (data) => {
       try {
         const eventData = {
           ...data,
-          start_time: format(selectedDate.start, "yyyy-MM-dd HH:mm:ss"),
-          end_time: format(selectedDate.end, "yyyy-MM-dd HH:mm:ss"),
+          start_time: selectedEvent 
+            ? selectedEvent.start_time 
+            : format(selectedDate.start, "yyyy-MM-dd HH:mm:ss"),
+          end_time: selectedEvent 
+            ? selectedEvent.end_time 
+            : format(selectedDate.end, "yyyy-MM-dd HH:mm:ss"),
         };
-        const { data: newEvent } = await axiosClient.post("events", eventData);
-        setAllEvents((prev) => [newEvent, ...prev]);
-        setIsDialogOpen(false);
+
+        let updatedEvent;
+
+        if (selectedEvent) {
+          const { data: response } = await axiosClient.put(
+            `events/${selectedEvent.id}`,
+            eventData
+          );
+          updatedEvent = response;
+          toast.success("Event updated successfully");
+        } else {
+          const { data: newEvent } = await axiosClient.post("events", eventData);
+          updatedEvent = newEvent;
+          
+          if (data.attendees?.length) {
+            const { data: eventWithAttendees } = await axiosClient.post(
+              `events/${newEvent.id}/invite`,
+              {
+                user_ids: data.attendees
+              }
+            );
+            updatedEvent = eventWithAttendees;
+          }
+          
+          toast.success("Event created successfully");
+        }
+
+        setAllEvents((prev) => 
+          selectedEvent
+            ? prev.map((event) => (event.id === selectedEvent.id ? updatedEvent : event))
+            : [updatedEvent, ...prev]
+        );
       } catch (error) {
-        console.error("Failed to add event:", error);
+        console.error("Failed to save event:", error);
+        toast.error(error.response?.data?.message || "Failed to save event");
       } finally {
-        selectedDate?.view.calendar.unselect();
+        setSelectedEvent(null);
         setSelectedDate(null);
+        setIsDialogOpen(false);
       }
     },
-    [selectedDate]
+    [selectedEvent, selectedDate]
   );
 
-  const handleEventClick = useCallback(async (id, title) => {
-    setConfirmDelete({ id, title });
+  const handleEventClick = useCallback(({ event }) => {
+    const fullEvent = events.find(e => e.id === parseInt(event.id));
+    setSelectedEventId(event.id);
+    setSelectedEventForModal(fullEvent);
+    setIsDetailsModalOpen(true);
+  }, [events]);
+
+  const handleEditFromDetails = useCallback((event) => {
+    setSelectedEvent(event);
+    setIsDetailsModalOpen(false);
+    setIsDialogOpen(true);
+  }, []);
+
+  const handleDeleteFromDetails = useCallback((event) => {
+    setConfirmDelete({ id: event.id, title: event.title });
+    setIsDetailsModalOpen(false);
   }, []);
 
   const confirmDeleteEvent = useCallback(async () => {
@@ -150,38 +207,6 @@ export default function Calendar() {
       setConfirmDelete(null);
     }
   }, [confirmDelete]);
-
-  const handleEditClick = useCallback((event) => {
-    setSelectedEvent(event);
-    setIsEditDialogOpen(true);
-  }, []);
-
-  const handleUpdateEvent = useCallback(
-    async (newData) => {
-      if (!selectedEvent) return;
-
-      try {
-        const eventData = {
-          ...newData,
-          start_time: selectedEvent.start_time,
-          end_time: selectedEvent.end_time,
-        };
-        const { data } = await axiosClient.put(
-          `events/${selectedEvent.id}`,
-          eventData
-        );
-        setAllEvents((prev) =>
-          prev.map((event) => (event.id == selectedEvent.id ? data : event))
-        );
-        setIsEditDialogOpen(false);
-      } catch (error) {
-        console.error("Failed to update event:", error);
-      } finally {
-        setSelectedEvent(null);
-      }
-    },
-    [selectedEvent]
-  );
 
   const updateDates = async (selected) => {
     const { event } = selected;
@@ -201,16 +226,22 @@ export default function Calendar() {
         end_time: newEndTime,
       };
 
-      setEvents(events.map((el) => (el.id == event.id ? updatedEvent : el))
-      );
-      console.log(events)
-      setAllEvents(allEvents.map((el) => (el.id == event.id ? updatedEvent : el))
+      setEvents(events.map((el) => (el.id == event.id ? updatedEvent : el)));
+      console.log(events);
+      setAllEvents(
+        allEvents.map((el) => (el.id == event.id ? updatedEvent : el))
       );
     } catch (error) {
       console.error("Failed to update event date:", error);
       selected.revert();
     }
   };
+
+  const handleEventUpdate = useCallback((updatedEvent) => {
+    setAllEvents(prev => prev.map(event => 
+      event.id === updatedEvent.id ? updatedEvent : event
+    ));
+  }, []);
 
   // Get calendar view based on screen size
   const getCalendarView = useMemo(() => {
@@ -305,7 +336,7 @@ export default function Calendar() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    onClick={() => handleEventClick(event.id, event.title)}
+                    onClick={() => setConfirmDelete({ id: event.id, title: event.title })}
                     className="text-red-500 hover:text-red-700 transition-colors duration-200 p-1 rounded-full hover:bg-red-50"
                     aria-label="Delete event"
                   >
@@ -418,9 +449,7 @@ export default function Calendar() {
                 initialView={getCalendarView}
                 selectable={true}
                 select={handleDateClick}
-                eventClick={({ event }) => {
-                  handleEventClick(event.id, event.title);
-                }}
+                eventClick={handleEventClick}
                 eventContent={(eventInfo) => {
                   return (
                     <div className="flex flex-col p-1">
@@ -474,14 +503,20 @@ export default function Calendar() {
         categories={categories}
         isDialogOpen={isDialogOpen}
         setIsDialogOpen={setIsDialogOpen}
-        handleAddEvent={handleAddEvent}
-      />
-      <EditEventModal
-        categories={categories}
-        isDialogOpen={isEditDialogOpen}
-        setIsDialogOpen={setIsEditDialogOpen}
-        handleUpdateEvent={handleUpdateEvent}
+        onSubmit={handleEventSubmit}
         initialData={selectedEvent}
+        onEventUpdate={handleEventUpdate}
+      />
+
+      <EventDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={() => {
+          setIsDetailsModalOpen(false);
+          setSelectedEventForModal(null);
+        }}
+        event={selectedEventForModal}
+        onEdit={handleEditFromDetails}
+        onDelete={handleDeleteFromDetails}
       />
     </>
   );

@@ -51,15 +51,35 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
     public function events()
     {
         return $this->hasMany(Event::class);
     }
+
+    public function ownedTeams()
+    {
+        return $this->hasMany(Team::class);
+    }
+
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'team_members');
+    }
+
+    public function notificationPreferences()
+    {
+        return $this->hasMany(EventNotificationPreference::class);
+    }
+
+    public function eventNotifications()
+    {
+        return $this->morphMany(DatabaseNotification::class, 'notifiable')
+            ->orderBy('created_at', 'desc');
+    }
+
     protected function verificationUrl($notifiable)
     {
-
-
-
         return 'hello';
     }
 }

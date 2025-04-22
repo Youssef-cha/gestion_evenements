@@ -17,7 +17,7 @@ class Event extends Model
         'end_time',
         'location',
     ];
-    protected $with = ['category'];
+    protected $with = ['category','attendees'];
     public function category()
     {
         return $this->belongsTo(EventCategory::class, 'event_category_id');

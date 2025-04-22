@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -13,9 +14,29 @@ class EventController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-        $events = $user->events()->orderBy('created_at', "desc")->get();
-        return response($events, 200);
+        $user = Auth::user();
+
+        // Get events created by the user
+        $createdEvents = $user->events()
+            ->with(['attendees', 'category'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Get events where user is an accepted attendee
+        $invitedEvents = Event::whereHas('attendees', function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                ->where('status', 'accepted');
+        })
+            ->with(['attendees', 'category'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Merge both collections and sort by created_at
+        $allEvents = $createdEvents->concat($invitedEvents)
+            ->sortByDesc('created_at')
+            ->values();
+
+        return response($allEvents, 200);
     }
 
     /**
@@ -23,21 +44,10 @@ class EventController extends Controller
      */
     public function store(StoreEventRequest $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $event = $user->events()->create($request->validated());
         $event->load('category');
         return response($event, 201);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Event $event)
-    {
-        if ($event->user_id !== auth()->user()->id) {
-            return response(['message' => 'Unauthorized'], 403);
-        }
-        return response($event, 200);
     }
 
     /**
@@ -45,7 +55,7 @@ class EventController extends Controller
      */
     public function update(UpdateEventRequest $request, Event $event)
     {
-        if ($event->user_id !== auth()->user()->id) {
+        if ($event->user_id !== Auth::id()) {
             return response(['message' => 'Unauthorized'], 403);
         }
         $event->update($request->validated());
@@ -57,7 +67,7 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        if ($event->user_id !== auth()->user()->id) {
+        if ($event->user_id !== Auth::id()) {
             return response(['message' => 'Unauthorized'], 403);
         }
         $event->delete();

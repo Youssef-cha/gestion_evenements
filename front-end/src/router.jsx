@@ -13,6 +13,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Analytics from "./pages/Analytics";
 import Landing from "./pages/Landing";
 import Teams from "./pages/Teams";
+import Notifications from "./pages/Notifications";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />,
+      },
+      {
+        path: "/notifications",
+        element: <Notifications />,
       },
     ],
   },
