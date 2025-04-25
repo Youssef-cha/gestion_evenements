@@ -159,7 +159,7 @@ const AppSidbar = ({ user }) => {
                         </AlertDialogCancel>
                         <AlertDialogAction asChild>
                           <button
-                            className="bg-destructive hover:bg-destructive/90 cursor-pointer text-destructive-foreground transition-all duration-200 active:scale-95"
+                            className="bg-red-500 hover:bg-destructive/90 cursor-pointer text-destructive-foreground transition-all duration-200 active:scale-95"
                             onClick={() => dispatch(logout())}
                           >
                             Log out

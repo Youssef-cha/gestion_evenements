@@ -35,6 +35,7 @@ class TeamController extends Controller
         // Add the creator as a team member
         $team->members()->attach(Auth::id());
         $team->loadCount(['members as member_count']);
+        $team->load('members');
         return response()->json($team, 201);
     }
 

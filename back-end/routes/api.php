@@ -31,10 +31,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('teams/{team}/members', [TeamController::class, 'addMembers']);
     Route::delete('teams/{team}/members', [TeamController::class, 'removeMembers']);
     Route::put('teams/{team}/favorite', [TeamController::class, 'toggleFavorite']);
-});
-
-// Notification routes
-Route::middleware('auth:sanctum')->group(function () {
+    // Notification routes
     Route::get('/notifications', [NotificationPreferenceController::class, 'getNotifications']);
     Route::post('/notifications/{notification}/read', [NotificationPreferenceController::class, 'markAsRead']);
     Route::post('/events/{event}/notification-preferences', [NotificationPreferenceController::class, 'store']);

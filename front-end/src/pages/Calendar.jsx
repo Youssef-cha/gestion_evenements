@@ -124,11 +124,11 @@ export default function Calendar() {
       try {
         const eventData = {
           ...data,
-          start_time: selectedEvent 
-            ? selectedEvent.start_time 
+          start_time: selectedEvent
+            ? selectedEvent.start_time
             : format(selectedDate.start, "yyyy-MM-dd HH:mm:ss"),
-          end_time: selectedEvent 
-            ? selectedEvent.end_time 
+          end_time: selectedEvent
+            ? selectedEvent.end_time
             : format(selectedDate.end, "yyyy-MM-dd HH:mm:ss"),
         };
 
@@ -142,25 +142,30 @@ export default function Calendar() {
           updatedEvent = response;
           toast.success("Event updated successfully");
         } else {
-          const { data: newEvent } = await axiosClient.post("events", eventData);
+          const { data: newEvent } = await axiosClient.post(
+            "events",
+            eventData
+          );
           updatedEvent = newEvent;
-          
+
           if (data.attendees?.length) {
             const { data: eventWithAttendees } = await axiosClient.post(
               `events/${newEvent.id}/invite`,
               {
-                user_ids: data.attendees
+                user_ids: data.attendees,
               }
             );
             updatedEvent = eventWithAttendees;
           }
-          
+
           toast.success("Event created successfully");
         }
 
-        setAllEvents((prev) => 
+        setAllEvents((prev) =>
           selectedEvent
-            ? prev.map((event) => (event.id === selectedEvent.id ? updatedEvent : event))
+            ? prev.map((event) =>
+                event.id === selectedEvent.id ? updatedEvent : event
+              )
             : [updatedEvent, ...prev]
         );
       } catch (error) {
@@ -175,12 +180,15 @@ export default function Calendar() {
     [selectedEvent, selectedDate]
   );
 
-  const handleEventClick = useCallback(({ event }) => {
-    const fullEvent = events.find(e => e.id === parseInt(event.id));
-    setSelectedEventId(event.id);
-    setSelectedEventForModal(fullEvent);
-    setIsDetailsModalOpen(true);
-  }, [events]);
+  const handleEventClick = useCallback(
+    ({ event }) => {
+      const fullEvent = events.find((e) => e.id === parseInt(event.id));
+      setSelectedEventId(event.id);
+      setSelectedEventForModal(fullEvent);
+      setIsDetailsModalOpen(true);
+    },
+    [events]
+  );
 
   const handleEditFromDetails = useCallback((event) => {
     setSelectedEvent(event);
@@ -238,9 +246,9 @@ export default function Calendar() {
   };
 
   const handleEventUpdate = useCallback((updatedEvent) => {
-    setAllEvents(prev => prev.map(event => 
-      event.id === updatedEvent.id ? updatedEvent : event
-    ));
+    setAllEvents((prev) =>
+      prev.map((event) => (event.id === updatedEvent.id ? updatedEvent : event))
+    );
   }, []);
 
   // Get calendar view based on screen size
@@ -336,7 +344,9 @@ export default function Calendar() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    onClick={() => setConfirmDelete({ id: event.id, title: event.title })}
+                    onClick={() =>
+                      setConfirmDelete({ id: event.id, title: event.title })
+                    }
                     className="text-red-500 hover:text-red-700 transition-colors duration-200 p-1 rounded-full hover:bg-red-50"
                     aria-label="Delete event"
                   >
