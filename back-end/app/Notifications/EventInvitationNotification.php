@@ -3,41 +3,40 @@
 namespace App\Notifications;
 
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EventInvitationNotification extends Notification implements ShouldQueue
+class EventInvitationNotification extends Notification
 {
     use Queueable;
 
     public function __construct(
-        protected Event $event
+        protected Event $event,
+        protected User $sender
     ) {}
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        return ['broadcast', 'database'];
     }
-
-    public function toMail(object $notifiable): MailMessage
+    public function databaseType(object $notifiable): string
     {
-        return (new MailMessage)
-            ->subject("You're invited to: {$this->event->title}")
-            ->line("You have been invited to attend {$this->event->title}")
-            ->line("Event details:")
-            ->line("Date: " . $this->event->start_time->format('Y-m-d H:i'))
-            ->line("Location: {$this->event->location}")
-            ->action('View Event', url("/calendar?event={$this->event->id}"))
-            ->line('Thank you for using our application!');
+        return 'invitation';
     }
-
+    public function broadcastType(): string
+    {
+        return 'invitation';
+    }
     public function toArray(object $notifiable): array
     {
         return [
             'event_id' => $this->event->id,
             'title' => $this->event->title,
+            'sender' => $this->sender,
             'type' => 'invitation',
             'message' => "You've been invited to {$this->event->title}",
             'start_time' => $this->event->start_time,

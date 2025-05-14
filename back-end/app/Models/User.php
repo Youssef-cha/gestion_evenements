@@ -72,11 +72,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(EventNotificationPreference::class);
     }
 
-    public function eventNotifications()
-    {
-        return $this->morphMany(DatabaseNotification::class, 'notifiable')
-            ->orderBy('created_at', 'desc');
-    }
+   
 
     protected function verificationUrl($notifiable)
     {

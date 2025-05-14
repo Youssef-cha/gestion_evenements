@@ -23,8 +23,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import EventDetailsModal from "@/components/EventDetailsModal";
+import { useSelector } from "react-redux";
+import { getAuthUser } from "@/redux/authSlice";
 
 export default function Calendar() {
+  const user = useSelector(getAuthUser);
   const { open } = useSidebar();
   const [settings, setSettings] = useState(
     JSON.parse(localStorage.getItem("calendar_settings")) || {
@@ -314,41 +317,43 @@ export default function Calendar() {
           <span className="text-sm md:text-base font-medium line-clamp-2">
             {event.title}
           </span>
-          <div className="flex gap-2 shrink-0">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => handleEditClick(event)}
-                    className="text-blue-500 hover:text-blue-700 transition-colors duration-200 p-1 rounded-full hover:bg-blue-50"
-                    aria-label="Edit event"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Edit event</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          {event.user_id === user.id && (
+            <div className="flex gap-2 shrink-0">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => handleEditClick(event)}
+                      className="text-blue-500 hover:text-blue-700 transition-colors duration-200 p-1 rounded-full hover:bg-blue-50"
+                      aria-label="Edit event"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Edit event</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => setConfirmDelete({ id: event.id, title: event.title })}
-                    className="text-red-500 hover:text-red-700 transition-colors duration-200 p-1 rounded-full hover:bg-red-50"
-                    aria-label="Delete event"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Delete event</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => setConfirmDelete({ id: event.id, title: event.title })}
+                      className="text-red-500 hover:text-red-700 transition-colors duration-200 p-1 rounded-full hover:bg-red-50"
+                      aria-label="Delete event"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Delete event</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2 mt-2">
           <Badge variant="outline" className="text-xs">
@@ -420,6 +425,7 @@ export default function Calendar() {
                 events={events.map((event) => {
                   const startDate = new Date(event.start_time);
                   const endDate = new Date(event.end_time);
+                  const isOwnedEvent = event.user_id === user.id;
 
                   const isAllDay =
                     startDate.getHours() === 0 &&
@@ -433,8 +439,12 @@ export default function Calendar() {
                     start: startDate,
                     end: endDate,
                     allDay: isAllDay,
+                    editable: isOwnedEvent,
+                    backgroundColor: isOwnedEvent ? undefined : '#3b82f6', // blue-500
+                    borderColor: isOwnedEvent ? undefined : '#3b82f6',
                     extendedProps: {
                       category: event.category?.name || "Uncategorized",
+                      isOwnedEvent
                     },
                   };
                 })}
@@ -517,6 +527,7 @@ export default function Calendar() {
         event={selectedEventForModal}
         onEdit={handleEditFromDetails}
         onDelete={handleDeleteFromDetails}
+        user={user}
       />
     </>
   );

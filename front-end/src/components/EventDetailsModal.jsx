@@ -19,7 +19,8 @@ const EventDetailsModal = ({
   onClose, 
   event, 
   onEdit, 
-  onDelete 
+  onDelete, 
+  user 
 }) => {
   if (!event) return null;
 
@@ -39,23 +40,25 @@ const EventDetailsModal = ({
                     Organized by {organizer?.name || "Unknown"}
                   </DialogDescription>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => onEdit(event)}
-                    className="hover:bg-secondary"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => onDelete(event)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+                {event.user_id === user?.id && (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => onEdit(event)}
+                      className="hover:bg-secondary"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => onDelete(event)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
               
               <div className="flex gap-2 flex-wrap">

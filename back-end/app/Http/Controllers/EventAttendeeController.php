@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Team;
 use App\Models\User;
-use App\Models\EventAttendee;
 use App\Notifications\EventInvitationNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -61,7 +60,7 @@ class EventAttendeeController extends Controller
 
                 // Send notification
                 $user = User::find($userId);
-                $user->notify(new EventInvitationNotification($event));
+                $user->notify(new EventInvitationNotification($event, Auth::user()));
             }
         }
 
@@ -78,7 +77,7 @@ class EventAttendeeController extends Controller
             'status' => $data['status']
         ]);
 
-        return response()->json($event->load('attendees.user'));
+        return response(status: 204);
     }
 
     public function getEventAttendees(Event $event)

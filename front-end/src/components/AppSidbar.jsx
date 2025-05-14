@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import {
+  Bell,
   Calendar,
   ChartLine,
   ChevronUp,
@@ -40,13 +41,19 @@ import {
   Users,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router";
+import { Link, Navigate } from "react-router";
 import { Badge } from "./ui/badge";
 import axiosClient from "@/axios";
 import { toast } from "sonner";
+import { useColorContext } from "@/hooks/useColorContext";
 
 const AppSidbar = ({ user }) => {
   const { open } = useSidebar();
+  const { notifications } = useColorContext();
+  const notificationCount = notifications.filter((notification) => {
+    return !notification.read_at;
+  }).length;
+
   const sideBarItems = [
     {
       title: "home",
@@ -67,6 +74,20 @@ const AppSidbar = ({ user }) => {
       title: "Teams and Members",
       icon: <Users className="text-muted-foreground" />,
       link: "/teams-members",
+    },
+    {
+      title: "notifications",
+      icon: (
+        <div className="relative">
+          <Bell className="text-muted-foreground" size={20} />
+          {notificationCount > 0 && (
+            <Badge className="absolute -bottom-1 -right-1 rounded-full bg-red-500 size-3 p-0 text-[8px]">
+              {notificationCount}
+            </Badge>
+          )}
+        </div>
+      ),
+      link: "/notifications",
     },
   ];
   const dispatch = useDispatch();

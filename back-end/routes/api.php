@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventCategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EventAttendeeController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\NotificationPreferenceController;
 use Illuminate\Support\Facades\Route;
@@ -14,8 +15,13 @@ require __DIR__ . '/auth.php';
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/users', [UserController::class, 'update']);
+    // event categories routes
     Route::apiResource('eventCategories', EventCategoryController::class);
+
+    // Event routes
     Route::apiResource('events', EventController::class)->except(['show']);
+
+    // Analytics routes
     Route::get('/analytics/line-graph', [AnalyticsController::class, 'lineGraph']);
     Route::get('/analytics/pie-chart', [AnalyticsController::class, 'pieChart']);
     Route::get('/analytics/bar-chart', [AnalyticsController::class, 'barChart']);
@@ -31,12 +37,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('teams/{team}/members', [TeamController::class, 'addMembers']);
     Route::delete('teams/{team}/members', [TeamController::class, 'removeMembers']);
     Route::put('teams/{team}/favorite', [TeamController::class, 'toggleFavorite']);
-});
 
-// Notification routes
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/notifications', [NotificationPreferenceController::class, 'getNotifications']);
-    Route::post('/notifications/{notification}/read', [NotificationPreferenceController::class, 'markAsRead']);
-    Route::post('/events/{event}/notification-preferences', [NotificationPreferenceController::class, 'store']);
-    Route::get('/events/{event}/notification-preferences', [NotificationPreferenceController::class, 'show']);
+
+    Route::get('/notifications', [NotificationController::class, 'index']);
+
+    Route::post('/notifications/read', [NotificationController::class, 'markAsRead']);
+    Route::delete('/notifications',[NotificationController::class, 'delete']);
+
 });
