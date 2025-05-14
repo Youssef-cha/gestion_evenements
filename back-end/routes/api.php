@@ -9,6 +9,7 @@ use App\Http\Controllers\EventAttendeeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\NotificationPreferenceController;
+use App\Notifications\EventInvitationNotification;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/auth.php';
@@ -38,10 +39,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('teams/{team}/members', [TeamController::class, 'removeMembers']);
     Route::put('teams/{team}/favorite', [TeamController::class, 'toggleFavorite']);
 
+    Route::get('/send', function () {
+        $user = auth()->user();
+        $user->notify(new EventInvitationNotification($user->events()->first(), $user));
+        return response()->json(['message' => 'Notification sent']);
+    });
 
     Route::get('/notifications', [NotificationController::class, 'index']);
 
     Route::post('/notifications/read', [NotificationController::class, 'markAsRead']);
-    Route::delete('/notifications',[NotificationController::class, 'delete']);
-
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'delete']);
 });

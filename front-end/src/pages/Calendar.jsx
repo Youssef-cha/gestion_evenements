@@ -34,6 +34,7 @@ export default function Calendar() {
       showPassedEvents: false,
       showFutureEvents: true,
       showWeekendDays: true,
+      showInvitedEvents: true, // Added this line
     }
   );
   const [events, setEvents] = useState([]);
@@ -80,12 +81,15 @@ export default function Calendar() {
     return allEvents.filter((event) => {
       const eventDate = new Date(event.start_time).setHours(0, 0, 0, 0);
       const isPastEvent = eventDate < currentDate;
+      const isInvitedEvent = event.user_id !== user.id; // Added this line
+      
       return (
         (settings.showPassedEvents || !isPastEvent) &&
-        (settings.showFutureEvents || isPastEvent)
+        (settings.showFutureEvents || isPastEvent) &&
+        (settings.showInvitedEvents || !isInvitedEvent) // Added this condition
       );
     });
-  }, [settings, allEvents]);
+  }, [settings, allEvents, user]); // Added user to dependency array
 
   // Update events when filtered events change
   useEffect(() => {

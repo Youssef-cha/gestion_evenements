@@ -17,14 +17,13 @@ class NotificationController extends Controller
         $notification = $user->notifications->markAsRead();
         return response(status: 204);
     }
-    public function delete(Request $request)
+    public function delete(Request $request, string $notification)
     {
-        $notificationId = $request->input('notification_id');
-        if (!$notificationId) {
+        if (!$notification) {
             return response(['message' => 'Notification ID is required'], 422);
         }
         $user = auth()->user();
-        $notification = $user->notifications()->find($notificationId);
+        $notification = $user->notifications()->find($notification);
         if ($notification) {
             $notification->delete();
             return response(status: 204);

@@ -46,6 +46,7 @@ import { Badge } from "./ui/badge";
 import axiosClient from "@/axios";
 import { toast } from "sonner";
 import { useColorContext } from "@/hooks/useColorContext";
+import echo from "@/echo";
 
 const AppSidbar = ({ user }) => {
   const { open } = useSidebar();
@@ -53,6 +54,8 @@ const AppSidbar = ({ user }) => {
   const notificationCount = notifications.filter((notification) => {
     return !notification.read_at;
   }).length;
+
+  
 
   const sideBarItems = [
     {

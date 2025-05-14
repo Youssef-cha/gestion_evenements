@@ -51,6 +51,14 @@ export function CalendarSettings({ settings, setSettings }) {
         >
           show future events
         </DropdownMenuCheckboxItem>
+        <DropdownMenuCheckboxItem
+          checked={settings.showInvitedEvents}
+          onCheckedChange={(value) => {
+            setSettings({ ...settings, showInvitedEvents: value });
+          }}
+        >
+          show invited events
+        </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

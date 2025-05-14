@@ -1,5 +1,3 @@
-"use client";
-
 import axiosClient from "@/axios";
 import { useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -47,11 +45,12 @@ const Notifications = () => {
   const handleResponse = async (notification, response) => {
     const eventId = notification.event_id;
     const notificationId = notification.id;
+    console.log(notificationId);
     try {
       axiosClient.put(`/events/${eventId}/attendance`, { status: response });
-      axiosClient.delete(`/notifications`, {
-        notification_id: notificationId,
-      });
+      axiosClient.delete(`/notifications/${notificationId}`);
+      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+      toast.success("Response sent successfully!");
     } catch (error) {
       console.error("Error updating event attendance:", error);
       toast.error("Error updating event attendance. Please try again.");
