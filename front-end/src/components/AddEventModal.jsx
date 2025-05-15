@@ -93,7 +93,6 @@ const AddEventModal = ({
   };
 
   const handleAddAttendees = async (data) => {
-    console.log(data);
     if (initialData) {
       try {
         const { data: updatedEvent } = await axiosClient.post(

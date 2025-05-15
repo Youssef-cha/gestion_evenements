@@ -46,7 +46,6 @@ export default function Calendar() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [categories, setCategories] = useState([]);
   const [confirmDelete, setConfirmDelete] = useState(null);
-  const [selectedEventId, setSelectedEventId] = useState(null);
   const [selectedEventForModal, setSelectedEventForModal] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
@@ -75,31 +74,29 @@ export default function Calendar() {
     }
   }, []);
 
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchEvents();
+    fetchCategories();
+  }, [fetchEvents, fetchCategories]);
+
   // Filter events based on settings
-  const filteredEvents = useMemo(() => {
+  useEffect(() => {
     const currentDate = new Date().setHours(0, 0, 0, 0);
-    return allEvents.filter((event) => {
+    const filtered = allEvents.filter((event) => {
       const eventDate = new Date(event.start_time).setHours(0, 0, 0, 0);
       const isPastEvent = eventDate < currentDate;
-      const isInvitedEvent = event.user_id !== user.id; // Added this line
-      
+      const isInvitedEvent = event.user_id !== user.id;
+
       return (
         (settings.showPassedEvents || !isPastEvent) &&
         (settings.showFutureEvents || isPastEvent) &&
-        (settings.showInvitedEvents || !isInvitedEvent) // Added this condition
+        (settings.showInvitedEvents || !isInvitedEvent)
       );
     });
-  }, [settings, allEvents, user]); // Added user to dependency array
-
-  // Update events when filtered events change
-  useEffect(() => {
-    setEvents(filteredEvents);
-  }, [filteredEvents]);
-
-  // Save settings to localStorage
-  useEffect(() => {
     localStorage.setItem("calendar_settings", JSON.stringify(settings));
-  }, [settings]);
+    setEvents(filtered);
+  }, [settings, allEvents, user]);
 
   // Show skeleton on sidebar toggle
   useEffect(() => {
@@ -107,12 +104,6 @@ export default function Calendar() {
     const timer = setTimeout(() => setShowSkeleton(false), 200);
     return () => clearTimeout(timer);
   }, [open]);
-
-  // Fetch data on component mount
-  useEffect(() => {
-    fetchEvents();
-    fetchCategories();
-  }, [fetchEvents, fetchCategories]);
 
   const handleDateClick = useCallback((selected) => {
     setSelectedDate(selected);
@@ -131,11 +122,11 @@ export default function Calendar() {
       try {
         const eventData = {
           ...data,
-          start_time: selectedEvent 
-            ? selectedEvent.start_time 
+          start_time: selectedEvent
+            ? selectedEvent.start_time
             : format(selectedDate.start, "yyyy-MM-dd HH:mm:ss"),
-          end_time: selectedEvent 
-            ? selectedEvent.end_time 
+          end_time: selectedEvent
+            ? selectedEvent.end_time
             : format(selectedDate.end, "yyyy-MM-dd HH:mm:ss"),
         };
 
@@ -149,25 +140,32 @@ export default function Calendar() {
           updatedEvent = response;
           toast.success("Event updated successfully");
         } else {
-          const { data: newEvent } = await axiosClient.post("events", eventData);
+          const { data: newEvent } = await axiosClient.post(
+            "events",
+            eventData
+          );
+
           updatedEvent = newEvent;
-          
-          if (data.attendees?.length) {
+          const attendees = data.attendees;
+          console.log(attendees);
+          if (attendees.user_ids?.length > 0 || attendees.team_ids?.length) {
             const { data: eventWithAttendees } = await axiosClient.post(
               `events/${newEvent.id}/invite`,
               {
-                user_ids: data.attendees
+                ...attendees,
               }
             );
             updatedEvent = eventWithAttendees;
           }
-          
+
           toast.success("Event created successfully");
         }
 
-        setAllEvents((prev) => 
+        setAllEvents((prev) =>
           selectedEvent
-            ? prev.map((event) => (event.id === selectedEvent.id ? updatedEvent : event))
+            ? prev.map((event) =>
+                event.id === selectedEvent.id ? updatedEvent : event
+              )
             : [updatedEvent, ...prev]
         );
       } catch (error) {
@@ -182,12 +180,14 @@ export default function Calendar() {
     [selectedEvent, selectedDate]
   );
 
-  const handleEventClick = useCallback(({ event }) => {
-    const fullEvent = events.find(e => e.id === parseInt(event.id));
-    setSelectedEventId(event.id);
-    setSelectedEventForModal(fullEvent);
-    setIsDetailsModalOpen(true);
-  }, [events]);
+  const handleEventClick = useCallback(
+    ({ event }) => {
+      const fullEvent = events.find((e) => e.id === parseInt(event.id));
+      setSelectedEventForModal(fullEvent);
+      setIsDetailsModalOpen(true);
+    },
+    [events]
+  );
 
   const handleEditFromDetails = useCallback((event) => {
     setSelectedEvent(event);
@@ -245,9 +245,9 @@ export default function Calendar() {
   };
 
   const handleEventUpdate = useCallback((updatedEvent) => {
-    setAllEvents(prev => prev.map(event => 
-      event.id === updatedEvent.id ? updatedEvent : event
-    ));
+    setAllEvents((prev) =>
+      prev.map((event) => (event.id === updatedEvent.id ? updatedEvent : event))
+    );
   }, []);
 
   // Get calendar view based on screen size
@@ -344,7 +344,9 @@ export default function Calendar() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => setConfirmDelete({ id: event.id, title: event.title })}
+                      onClick={() =>
+                        setConfirmDelete({ id: event.id, title: event.title })
+                      }
                       className="text-red-500 hover:text-red-700 transition-colors duration-200 p-1 rounded-full hover:bg-red-50"
                       aria-label="Delete event"
                     >
@@ -444,11 +446,11 @@ export default function Calendar() {
                     end: endDate,
                     allDay: isAllDay,
                     editable: isOwnedEvent,
-                    backgroundColor: isOwnedEvent ? undefined : '#3b82f6', // blue-500
-                    borderColor: isOwnedEvent ? undefined : '#3b82f6',
+                    backgroundColor: isOwnedEvent ? undefined : "#3b82f6", // blue-500
+                    borderColor: isOwnedEvent ? undefined : "#3b82f6",
                     extendedProps: {
                       category: event.category?.name || "Uncategorized",
-                      isOwnedEvent
+                      isOwnedEvent,
                     },
                   };
                 })}
