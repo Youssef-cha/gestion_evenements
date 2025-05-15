@@ -147,8 +147,7 @@ export default function Calendar() {
 
           updatedEvent = newEvent;
           const attendees = data.attendees;
-          console.log(attendees);
-          if (attendees.user_ids?.length > 0 || attendees.team_ids?.length) {
+          if (attendees?.user_ids.length > 0 || attendees?.team_ids.length) {
             const { data: eventWithAttendees } = await axiosClient.post(
               `events/${newEvent.id}/invite`,
               {
