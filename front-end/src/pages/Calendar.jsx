@@ -373,6 +373,23 @@ export default function Calendar() {
       </motion.li>
     ));
   };
+  const onQuit = async (eventId) => {
+    try {
+      await axiosClient.delete(`/events/${eventId}/leave`);
+      setAllEvents((prevEvents) =>
+        prevEvents.filter((event) => event.id !== eventId)
+      );
+
+      toast.success("You have left the event successfully");
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Error",
+        description: "Failed to leave the event. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <>
@@ -530,6 +547,7 @@ export default function Calendar() {
           setIsDetailsModalOpen(false);
           setSelectedEventForModal(null);
         }}
+        onQuit={onQuit}
         event={selectedEventForModal}
         onEdit={handleEditFromDetails}
         onDelete={handleDeleteFromDetails}

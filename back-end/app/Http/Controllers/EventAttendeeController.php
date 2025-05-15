@@ -84,4 +84,17 @@ class EventAttendeeController extends Controller
     {
         return response()->json($event->load('attendees'));
     }
+
+    public function leave(Event $event)
+    {
+        // Check if user is an attendee of this event
+        if (!$event->attendees()->where('user_id', Auth::id())->exists()) {
+            return response()->json(['message' => 'You are not an attendee of this event'], 404);
+        }
+
+        // Remove the user from the event's attendees
+        $event->attendees()->detach(Auth::id());
+
+        return response()->json(status: 204);
+    }
 }

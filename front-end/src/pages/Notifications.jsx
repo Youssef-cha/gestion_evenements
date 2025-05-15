@@ -45,7 +45,6 @@ const Notifications = () => {
   const handleResponse = async (notification, response) => {
     const eventId = notification.event_id;
     const notificationId = notification.id;
-    console.log(notificationId);
     try {
       axiosClient.put(`/events/${eventId}/attendance`, { status: response });
       axiosClient.delete(`/notifications/${notificationId}`);

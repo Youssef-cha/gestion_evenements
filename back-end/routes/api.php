@@ -32,6 +32,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/events/{event}/invite', [EventAttendeeController::class, 'invite']);
     Route::put('/events/{event}/attendance', [EventAttendeeController::class, 'updateStatus']);
     Route::get('/events/{event}/attendees', [EventAttendeeController::class, 'getEventAttendees']);
+    Route::delete('/events/{event}/leave', [EventAttendeeController::class, 'leave']);
 
     // Team routes
     Route::apiResource('teams', TeamController::class)->except(['show']);
